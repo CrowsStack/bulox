@@ -3,256 +3,296 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "./components/Navbar";
 
-// Sample gallery images (replace with your own)
-const images = [
-  "/gallery/image1.jpg",
-  "/gallery/image2.jpg", 
-  "/gallery/image3.jpg",
-  "/gallery/image4.jpg",
-  "/gallery/image5.jpg",
-  "/gallery/image6.jpg",
-  "/gallery/image7.jpg", 
-  "/gallery/image8.jpg",
-  "/gallery/image9.jpg",
-  "/gallery/image10.jpg"
+// Comprehensive slides with detailed descriptions
+const slides = [
+  {
+    title: "Interior Design",
+    location: "Residential Spaces",
+    description: "Transforming living spaces with innovative design and meticulous attention to detail.",
+    image: "/gallery/image1.jpg",
+    services: ["Custom Furniture", "Color Consultation", "Space Planning", "Lighting Design"]
+  },
+  {
+    title: "Exterior Finishing",
+    location: "Outdoor Environments",
+    description: "Creating stunning exterior surfaces that enhance architectural beauty and durability.",
+    image: "/gallery/image2.jpg",
+    services: ["Wall Texturing", "Concrete Coating", "Weather Protection", "Color Treatments"]
+  },
+  {
+    title: "Professional Screeding",
+    location: "Floor Preparation",
+    description: "Precision floor leveling and preparation for perfect surface installations.",
+    image: "/gallery/image3.jpg",
+    services: ["Concrete Leveling", "Epoxy Coating", "Surface Smoothing", "Industrial Flooring"]
+  },
+  {
+    title: "Custom Furniture Crafting",
+    location: "Bespoke Woodwork",
+    description: "Handcrafted furniture solutions tailored to your unique style and functional needs.",
+    image: "/gallery/image4.jpg",
+    services: ["Built-in Cabinets", "Custom Shelving", "Furniture Restoration", "Modern Design"]
+  },
+  {
+    title: "Painting Expertise",
+    location: "Interior & Exterior Surfaces",
+    description: "Professional painting services that bring vibrant colors and protective finishes.",
+    image: "/gallery/image5.jpg",
+    services: ["Wall Painting", "Texture Finishes", "Color Matching", "Protective Coatings"]
+  },
+  {
+    title: "Decorative POP Work",
+    location: "Ceiling & Wall Designs",
+    description: "Intricate plaster of paris designs that add elegance and architectural interest.",
+    image: "/gallery/image6.jpg",
+    services: ["Ceiling Designs", "Wall Moldings", "Decorative Patterns", "Artistic Textures"]
+  },
+  {
+    title: "Concrete Flooring",
+    location: "Indoor & Outdoor Surfaces",
+    description: "Advanced concrete solutions for durable, aesthetically pleasing floor installations.",
+    image: "/gallery/image7.jpg",
+    services: ["Polished Concrete", "Stamped Designs", "Color Staining", "Protective Sealants"]
+  },
+  {
+    title: "Landscape Design",
+    location: "Exterior Environments",
+    description: "Creating beautiful outdoor spaces with thoughtful landscaping and decorative elements.",
+    image: "/gallery/image8.jpg",
+    services: ["Garden Planning", "Flower Pot Design", "Pathway Construction", "Green Space Development"]
+  },
+  {
+    title: "Architectural Detailing",
+    location: "Structural Enhancements",
+    description: "Precision detailing that elevates architectural elements and structural aesthetics.",
+    image: "/gallery/image9.jpg",
+    services: ["Structural Finishing", "Decorative Elements", "Architectural Accents", "Surface Refinement"]
+  },
+  {
+    title: "Comprehensive Renovation",
+    location: "Full Space Transformation",
+    description: "Complete renovation services that reimagine and revitalize living and working spaces.",
+    image: "/gallery/image10.jpg",
+    services: ["Total Remodeling", "Space Optimization", "Integrated Design", "Turnkey Solutions"]
+  }
 ];
 
-export default function GalleryCarousel() {
+export default function ServiceCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
-  const PREVIEW_LIMIT = 5; // Maximum number of preview thumbnails
+  const PREVIEW_LIMIT = 9;
 
   const handleNext = () => {
     setDirection(1);
     setCurrentIndex((prevIndex) => 
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === slides.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const handlePrevious = () => {
     setDirection(-1);
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
     );
   };
 
-  const slideVariants = {
-    current: {
-      zIndex: 1,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      opacity: 1
-    },
-    next: {
-      zIndex: 2,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      opacity: 1,
-      scale: 0,
-      transformOrigin: 'center center'
-    },
-    nextAnimate: {
-      scale: 1,
-      transition: {
-        type: "tween",
-        duration: 0.5
-      }
-    }
-  };
-
-  const thumbnailVariants = {
-    initial: (custom: { index: number, direction: number }) => ({
-      opacity: 0,
-      x: custom.direction > 0 ? 100 : -100,
-      scale: 0.7,
-      transition: {
-        delay: custom.index * 0.1
-      }
-    }),
-    animate: (custom: { index: number, direction: number }) => ({
-      opacity: 1,
-      x: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20,
-        delay: custom.index * 0.1
-      }
-    }),
-    exit: (custom: { index: number, direction: number }) => ({
-      opacity: 0,
-      x: custom.direction > 0 ? -100 : 100,
-      scale: 0.7,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20,
-        delay: custom.index * 0.1
-      }
-    })
-  };
-
-  // Compute preview images with movement rules
-  const previewImages = useMemo(() => {
-    // Create a circular buffer of images around the current index
+  // Enhanced preview slides computation
+  const previewSlides = useMemo(() => {
     const buffer = [];
-    const totalImages = images.length;
-
-    // Determine the start and end indices for preview
+    const totalSlides = slides.length;
     let start = currentIndex + 1;
-    let count = 0;
 
-    while (count < PREVIEW_LIMIT) {
-      // Wrap around if we exceed the image array
-      const index = start % totalImages;
-      
-      // Skip the current image
+    // Fill the buffer with the next 9 slides
+    for (let i = 0; i < PREVIEW_LIMIT; i++) {
+      const index = (start + i) % totalSlides;
       if (index !== currentIndex) {
-        buffer.push(images[index]);
-        count++;
+        buffer.push(slides[index]);
       }
-
-      start++;
     }
 
     return buffer;
-  }, [currentIndex, images]);
+  }, [currentIndex]);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden">
-      {/* Main Carousel */}
+    <div className="relative w-full h-screen overflow-hidden">
+      <Navbar />
+
+      {/* Hero Section */}
       <div className="absolute inset-0">
         <AnimatePresence initial={false}>
-          {/* Current Image */}
+          {/* Previous Image (stays in place) */}
           <motion.div 
-            key={`current-${currentIndex}`}
-            variants={slideVariants}
-            initial="current"
-            animate="current"
-            className="absolute w-full h-full"
+            key={`prev-image-${currentIndex}`}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0"
+            style={{ zIndex: 10 }}
           >
             <Image 
-              src={images[currentIndex]} 
-              alt={`Gallery Image ${currentIndex + 1}`}
+              src={slides[currentIndex].image}
+              alt={slides[currentIndex].title}
               fill
+              className="object-cover"
               priority
-              className="object-cover brightness-75 transition-all duration-300 hover:brightness-100"
             />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
           </motion.div>
 
-          {/* Next Image */}
+          {/* New Image (scales to cover) */}
           <motion.div 
-            key={`next-${(currentIndex + 1) % images.length}`}
-            variants={slideVariants}
-            initial="next"
-            animate="nextAnimate"
-            className="absolute w-full h-full"
+            key={`new-image-${(currentIndex + 1) % slides.length}`}
+            initial={{ 
+              scale: 0.5,
+              x: direction > 0 ? 100 : -100
+            }}
+            animate={{ 
+              scale: 1,
+              x: 0,
+              transition: {
+                type: "spring",
+                stiffness: 100,
+                damping: 20
+              }
+            }}
+            exit={{ 
+              scale: 0.5,
+              x: direction < 0 ? 100 : -100,
+              transition: {
+                type: "spring",
+                stiffness: 100,
+                damping: 20
+              }
+            }}
+            className="absolute inset-0"
+            style={{ zIndex: 11 }}
           >
             <Image 
-              src={images[(currentIndex + 1) % images.length]} 
-              alt={`Gallery Image ${(currentIndex + 1) % images.length + 1}`}
+              src={slides[(currentIndex + 1) % slides.length].image}
+              alt={slides[(currentIndex + 1) % slides.length].title}
               fill
+              className="object-cover"
               priority
-              className="object-cover brightness-75 transition-all duration-300 hover:brightness-100"
             />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
+          </motion.div>
+
+          {/* Text Content */}
+          <motion.div
+            key={`text-${currentIndex}`}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.5 }}
+            className="relative z-20 container mx-auto px-6 h-full flex items-center"
+          >
+            <div className="text-white max-w-xl">
+              <h2 className="font-righteous text-7xl font-bold mb-4">{slides[currentIndex].title}</h2>
+              <div className="flex items-center space-x-2 mb-6">
+                <div className="w-2 h-2 bg-white rounded-full" />
+                <span className="font-open-sans text-xl">{slides[currentIndex].location}</span>
+              </div>
+              <p className="font-open-sans text-lg mb-8 text-gray-300">{slides[currentIndex].description}</p>
+              <ul className="space-y-3">
+                {slides[currentIndex].services.map((service, index) => (
+                  <li key={index} className="flex items-center space-x-3 font-open-sans">
+                    <div className="w-1 h-1 bg-white rounded-full" />
+                    <span>{service}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8 flex space-x-4">
+                <button className="bg-white text-black px-6 py-3 rounded-full hover:bg-gray-200 transition font-open-sans font-semibold">
+                  Learn More
+                </button>
+                <button className="border border-white text-white px-6 py-3 rounded-full hover:bg-white/20 transition font-open-sans font-semibold">
+                  Contact Us
+                </button>
+              </div>
+            </div>
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Buttons */}
-        <button 
-          onClick={handlePrevious} 
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 
-            bg-white/20 hover:bg-white/40 backdrop-blur-sm 
-            text-white text-2xl font-bold 
-            w-12 h-12 rounded-full 
-            flex items-center justify-center 
-            shadow-2xl border border-white/30
-            transition-all duration-300 
-            hover:scale-110 hover:rotate-6
-            focus:outline-none focus:ring-2 focus:ring-white/50"
-        >
-          ←
-        </button>
-        <button 
-          onClick={handleNext} 
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 
-            bg-white/20 hover:bg-white/40 backdrop-blur-sm 
-            text-white text-2xl font-bold 
-            w-12 h-12 rounded-full 
-            flex items-center justify-center 
-            shadow-2xl border border-white/30
-            transition-all duration-300 
-            hover:scale-110 hover:-rotate-6
-            focus:outline-none focus:ring-2 focus:ring-white/50"
-        >
-          →
-        </button>
+        {/* Navigation */}
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30 flex items-center space-x-8">
+          <button 
+            onClick={handlePrevious}
+            className="text-white hover:text-gray-300 transition-colors"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button 
+            onClick={handleNext}
+            className="text-white hover:text-gray-300 transition-colors"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
 
-        {/* Pagination Dots */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
-          {images.map((_, index) => (
-            <button 
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`
-                w-4 h-4 rounded-full transition-all duration-500 ease-in-out
-                ${currentIndex === index 
-                  ? 'bg-white scale-125 shadow-[0_0_15px_rgba(255,255,255,0.7)]' 
-                  : 'bg-white/30 hover:bg-white/60'}
-                hover:scale-110 focus:outline-none
-                animate-pulse
-              `}
-            />
-          ))}
+        {/* Slide Counter */}
+        <div className="absolute bottom-12 right-20 z-30 text-white">
+          <span className="text-4xl font-bold font-open-sans">
+            {String(currentIndex + 1).padStart(2, '0')}
+          </span>
+          <span className="text-gray-500 text-xl ml-2 font-open-sans">
+            / {String(slides.length).padStart(2, '0')}
+          </span>
+        </div>
+
+        {/* Preview Thumbnails */}
+        <div className="absolute bottom-32 right-20 z-30 overflow-hidden">
+          <div className="flex space-x-2">
+            {previewSlides.map((slide) => (
+              <motion.div
+                key={slide.title}
+                initial={{ 
+                  x: direction > 0 ? 300 : -300,
+                  scale: 0.8
+                }}
+                animate={{ 
+                  x: 0,
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30
+                  }
+                }}
+                exit={{ 
+                  x: direction > 0 ? -300 : 300,
+                  scale: 0.8,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30
+                  }
+                }}
+                onClick={() => {
+                  const targetIndex = slides.findIndex(s => s.title === slide.title);
+                  setCurrentIndex(targetIndex);
+                }}
+                className="relative w-24 h-16 cursor-pointer overflow-hidden rounded-lg
+                  transform hover:scale-110 transition-transform duration-200
+                  flex-shrink-0"
+              >
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30 hover:bg-black/10 transition-colors" />
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* Preview Carousel Chain */}
-      <AnimatePresence>
-        <motion.div 
-          key={`preview-${currentIndex}`}
-          className="absolute bottom-4 right-4 z-30 flex space-x-4 w-[calc(100%-8rem)] overflow-x-auto"
-        >
-          {previewImages.map((image, index) => (
-            <motion.div
-              key={image}
-              custom={{ index, direction }}
-              variants={thumbnailVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              onClick={() => {
-                const actualIndex = images.findIndex(img => img === image);
-                setCurrentIndex(actualIndex);
-              }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={`
-                relative flex-shrink-0 w-24 h-16 cursor-pointer 
-                rounded-lg overflow-hidden 
-                shadow-lg transition-all duration-300
-                opacity-60 hover:opacity-100 hover:scale-105
-              `}
-            >
-              <Image 
-                src={image} 
-                alt={`Thumbnail ${index + 1}`}
-                fill
-                sizes="(max-width: 768px) 100px, 150px"
-                className="object-cover"
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
     </div>
   );
 }
