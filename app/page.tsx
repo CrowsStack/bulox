@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,12 +10,18 @@ const images = [
   "/gallery/image2.jpg", 
   "/gallery/image3.jpg",
   "/gallery/image4.jpg",
-  "/gallery/image5.jpg"
+  "/gallery/image5.jpg",
+  "/gallery/image6.jpg",
+  "/gallery/image7.jpg", 
+  "/gallery/image8.jpg",
+  "/gallery/image9.jpg",
+  "/gallery/image10.jpg"
 ];
 
 export default function GalleryCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const PREVIEW_LIMIT = 5; // Maximum number of preview thumbnails
 
   const handleNext = () => {
     setDirection(1);
@@ -32,73 +38,105 @@ export default function GalleryCarousel() {
   };
 
   const slideVariants = {
-    initial: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-      scale: 0.8
-    }),
-    animate: {
+    current: {
       zIndex: 1,
-      x: 0,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      opacity: 1
+    },
+    next: {
+      zIndex: 2,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
       opacity: 1,
+      scale: 0,
+      transformOrigin: 'center center'
+    },
+    nextAnimate: {
+      scale: 1,
+      transition: {
+        type: "tween",
+        duration: 0.5
+      }
+    }
+  };
+
+  const thumbnailVariants = {
+    initial: (custom: { index: number, direction: number }) => ({
+      opacity: 0,
+      x: custom.direction > 0 ? 100 : -100,
+      scale: 0.7,
+      transition: {
+        delay: custom.index * 0.1
+      }
+    }),
+    animate: (custom: { index: number, direction: number }) => ({
+      opacity: 1,
+      x: 0,
       scale: 1,
       transition: {
         type: "spring",
         stiffness: 300,
-        damping: 30
+        damping: 20,
+        delay: custom.index * 0.1
       }
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
+    }),
+    exit: (custom: { index: number, direction: number }) => ({
       opacity: 0,
-      scale: 0.8
-    })
-  };
-
-  const thumbnailVariants = {
-    hidden: { opacity: 0, x: -100 },
-    visible: (index: number) => ({
-      opacity: 1,
-      x: 0,
+      x: custom.direction > 0 ? -100 : 100,
+      scale: 0.7,
       transition: {
-        delay: index * 0.1,
         type: "spring",
         stiffness: 300,
-        damping: 20
+        damping: 20,
+        delay: custom.index * 0.1
       }
     })
   };
 
-  const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset: number, velocity: number) => {
-    return Math.abs(offset) * velocity;
-  };
+  // Compute preview images with movement rules
+  const previewImages = useMemo(() => {
+    // Create a circular buffer of images around the current index
+    const buffer = [];
+    const totalImages = images.length;
+
+    // Determine the start and end indices for preview
+    let start = currentIndex + 1;
+    let count = 0;
+
+    while (count < PREVIEW_LIMIT) {
+      // Wrap around if we exceed the image array
+      const index = start % totalImages;
+      
+      // Skip the current image
+      if (index !== currentIndex) {
+        buffer.push(images[index]);
+        count++;
+      }
+
+      start++;
+    }
+
+    return buffer;
+  }, [currentIndex, images]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       {/* Main Carousel */}
       <div className="absolute inset-0">
-        <AnimatePresence initial={false} custom={direction}>
+        <AnimatePresence initial={false}>
+          {/* Current Image */}
           <motion.div 
-            key={currentIndex}
-            custom={direction}
+            key={`current-${currentIndex}`}
             variants={slideVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={1}
-            onDragEnd={(e, { offset, velocity }) => {
-              const swipe = swipePower(offset.x, velocity.x);
-
-              if (swipe < -swipeConfidenceThreshold) {
-                handleNext();
-              } else if (swipe > swipeConfidenceThreshold) {
-                handlePrevious();
-              }
-            }}
+            initial="current"
+            animate="current"
             className="absolute w-full h-full"
           >
             <Image 
@@ -109,9 +147,26 @@ export default function GalleryCarousel() {
               className="object-cover brightness-75 transition-all duration-300 hover:brightness-100"
             />
           </motion.div>
+
+          {/* Next Image */}
+          <motion.div 
+            key={`next-${(currentIndex + 1) % images.length}`}
+            variants={slideVariants}
+            initial="next"
+            animate="nextAnimate"
+            className="absolute w-full h-full"
+          >
+            <Image 
+              src={images[(currentIndex + 1) % images.length]} 
+              alt={`Gallery Image ${(currentIndex + 1) % images.length + 1}`}
+              fill
+              priority
+              className="object-cover brightness-75 transition-all duration-300 hover:brightness-100"
+            />
+          </motion.div>
         </AnimatePresence>
 
-        {/* Wild Navigation Buttons with Neon Effect */}
+        {/* Navigation Buttons */}
         <button 
           onClick={handlePrevious} 
           className="absolute left-4 top-1/2 -translate-y-1/2 z-20 
@@ -141,7 +196,7 @@ export default function GalleryCarousel() {
           →
         </button>
 
-        {/* Dynamic Pagination Dots with Pulsing Effect */}
+        {/* Pagination Dots */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
           {images.map((_, index) => (
             <button 
@@ -161,41 +216,43 @@ export default function GalleryCarousel() {
       </div>
 
       {/* Preview Carousel Chain */}
-      <motion.div 
-        initial="hidden"
-        animate="visible"
-        className="absolute bottom-4 right-4 z-30 flex space-x-4 w-[calc(100%-8rem)] overflow-x-auto"
-      >
-        {images.map((image, index) => (
-          <motion.div
-            key={index}
-            custom={index}
-            variants={thumbnailVariants}
-            onClick={() => {
-              setDirection(index > currentIndex ? 1 : -1);
-              setCurrentIndex(index);
-            }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className={`
-              relative flex-shrink-0 w-24 h-16 cursor-pointer 
-              rounded-lg overflow-hidden 
-              shadow-lg transition-all duration-300
-              ${currentIndex === index 
-                ? 'border-4 border-white/80 scale-110' 
-                : 'opacity-60 hover:opacity-100 hover:scale-105'}
-            `}
-          >
-            <Image 
-              src={image} 
-              alt={`Thumbnail ${index + 1}`}
-              fill
-              sizes="(max-width: 768px) 100px, 150px"
-              className="object-cover"
-            />
-          </motion.div>
-        ))}
-      </motion.div>
+      <AnimatePresence>
+        <motion.div 
+          key={`preview-${currentIndex}`}
+          className="absolute bottom-4 right-4 z-30 flex space-x-4 w-[calc(100%-8rem)] overflow-x-auto"
+        >
+          {previewImages.map((image, index) => (
+            <motion.div
+              key={image}
+              custom={{ index, direction }}
+              variants={thumbnailVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              onClick={() => {
+                const actualIndex = images.findIndex(img => img === image);
+                setCurrentIndex(actualIndex);
+              }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className={`
+                relative flex-shrink-0 w-24 h-16 cursor-pointer 
+                rounded-lg overflow-hidden 
+                shadow-lg transition-all duration-300
+                opacity-60 hover:opacity-100 hover:scale-105
+              `}
+            >
+              <Image 
+                src={image} 
+                alt={`Thumbnail ${index + 1}`}
+                fill
+                sizes="(max-width: 768px) 100px, 150px"
+                className="object-cover"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
