@@ -153,11 +153,11 @@ export default function ServiceCarousel() {
   }, [slides.length]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen overflow-hidden">
       <Navbar />
 
       {/* Hero Section */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-10">
         <AnimatePresence initial={false}>
           {/* Previous Image (stays in place) */}
           <motion.div 
@@ -364,6 +364,10 @@ export default function ServiceCarousel() {
             {`${slides.length}`.padStart(2, '0')}
           </div>
         </div>
+      </div>
+
+      {/* Ensure Footer is below the carousel content */}
+      <div className="relative z-20">
       </div>
     </div>
   );
