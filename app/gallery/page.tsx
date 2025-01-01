@@ -195,9 +195,9 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative pt-24">
       {/* Category Filter */}
-      <div className="sticky top-0 z-20 bg-black/50 backdrop-blur-sm py-4">
+      <div className="z-20 bg-black/50 backdrop-blur-sm py-4">
         <div className="container mx-auto px-4">
           <div className="flex justify-center space-x-4">
             {categories.map((category) => (

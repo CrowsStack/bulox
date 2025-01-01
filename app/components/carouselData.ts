@@ -9,28 +9,34 @@ export interface Slide {
 
 // Animation variants
 export const imageVariants = {
-  initial: (direction: number) => ({
-    scale: 0.5,
-    x: direction > 0 ? 100 : -100
-  }),
+  initial: {
+    scale: 0,
+    opacity: 0.5,
+    zIndex: 2,
+  },
   animate: {
     scale: 1,
-    x: 0,
+    opacity: 1,
+    zIndex: 2,
     transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 20
+      scale: {
+        type: "spring",
+        stiffness: 50,
+        damping: 20
+      },
+      opacity: {
+        duration: 0.2
+      }
     }
   },
-  exit: (direction: number) => ({
-    scale: 0.5,
-    x: direction < 0 ? 100 : -100,
+  exit: {
+    opacity: 1,
+    scale: 1,
+    zIndex: 1,
     transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 20
+      duration: 0.2
     }
-  })
+  }
 };
 
 export const textVariants = {

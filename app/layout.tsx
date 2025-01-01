@@ -39,8 +39,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description || ''} />
+        <title>{metadata.title?.toString() || 'ON IT'}</title>
+        <meta name="description" content={metadata.description?.toString() || ''} />
       </head>
       <body className={`${inter.variable} relative min-h-screen bg-black`}>
         {/* Background Image with Pan-Tilt Effect */}
