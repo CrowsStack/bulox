@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import { motion } from 'framer-motion';
 
 // Define image type
 type GalleryImage = {
@@ -82,11 +80,74 @@ const images: GalleryImage[] = [
   }
 ];
 
-const categories = ['All', 'Nature', 'Architecture', 'Portrait', 'Landscape'];
+const categories = ['All', 'Nature', 'Architecture', 'Portrait'];
+
+// Function to generate random animation parameters
+const generateRandomAnimation = () => {
+  // Generate random corner positions
+  const corners = [
+    { x: -25, y: -25 }, // top-left
+    { x: 25, y: -25 },  // top-right
+    { x: -25, y: 25 },  // bottom-left
+    { x: 25, y: 25 },   // bottom-right
+    { x: 0, y: -25 },   // top-center
+    { x: 0, y: 25 },    // bottom-center
+    { x: -25, y: 0 },   // left-center
+    { x: 25, y: 0 },    // right-center
+  ] as const;
+
+  // Shuffle corners array
+  const shuffledCorners = [...corners]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 5); // Take 5 random positions
+
+  // Extract x and y coordinates for the animation
+  const xPositions = shuffledCorners.map(corner => corner.x);
+  const yPositions = shuffledCorners.map(corner => corner.y);
+  
+  return {
+    initial: { 
+      scale: 1.2,
+      rotate: Math.random() * 1 - 0.5,
+    },
+    animate: {
+      scale: 1.2,
+      x: xPositions,
+      y: yPositions,
+      rotate: shuffledCorners.map(() => Math.random() * 1 - 0.5),
+      transition: {
+        duration: Math.random() * 10 + 30, // 30-40 seconds
+        ease: "linear",
+        repeat: Infinity,
+        repeatType: "reverse" as const,
+        delay: Math.random() * 5,
+      }
+    }
+  };
+};
+
+// Background animation - slower and more subtle
+const backgroundAnimation = {
+  initial: { 
+    scale: 1.2,
+  },
+  animate: {
+    scale: 1.2,
+    x: [-15, 15, 0, -15],
+    y: [-15, 15, -15, 15],
+    transition: {
+      duration: 30,
+      ease: "linear",
+      repeat: Infinity,
+      repeatType: "reverse" as const,
+    }
+  }
+};
 
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [imageColumns, setColumns] = useState<GalleryImage[][]>([]);
+  const [isMobile, setIsMobile] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
 
   // Calculate columns based on screen width
@@ -95,6 +156,7 @@ export default function GalleryPage() {
 
     const screenWidth = window.innerWidth;
     let columnCount = screenWidth < 1024 ? 2 : 3;
+    setIsMobile(screenWidth < 768);
     
     const filteredImages = selectedCategory === 'All' 
       ? images 
@@ -133,48 +195,47 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => handleCategoryFilter(category)}
-              className={`px-4 py-2 rounded-full text-sm transition-colors duration-300 ${
-                selectedCategory === category 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+    <div className="min-h-screen relative">
+      {/* Category Filter */}
+      <div className="sticky top-0 z-20 bg-black/50 backdrop-blur-sm py-4">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center space-x-4">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryFilter(category)}
+                className={`px-4 py-2 rounded-full transition-all duration-300 ${
+                  selectedCategory === category
+                    ? 'bg-white text-black'
+                    : 'text-white hover:bg-white/10'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
+      </div>
 
-        {/* Gallery Grid */}
-        <div 
-          ref={galleryRef} 
-          className="grid grid-cols-2 md:grid-cols-3 gap-4"
-        >
-          {imageColumns.map((column, colIndex) => (
-            <div key={colIndex} className="grid gap-4">
+      {/* Gallery Grid */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {imageColumns.map((column, columnIndex) => (
+            <div key={columnIndex} className="space-y-8">
               {column.map((image) => (
                 <motion.div
                   key={image.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="relative overflow-hidden rounded-lg shadow-md"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative rounded-lg overflow-hidden shadow-xl"
+                  style={{ aspectRatio: image.aspectRatio }}
                 >
                   <Image
                     src={image.src}
                     alt={image.alt}
-                    width={400}  
-                    height={Math.round(400 / image.aspectRatio)}
-                    className="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
-                    priority={false}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-500"
                   />
                 </motion.div>
               ))}
@@ -182,7 +243,6 @@ export default function GalleryPage() {
           ))}
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

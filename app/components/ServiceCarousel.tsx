@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "./Navbar";
 import { 
   slides, 
   PREVIEW_LIMIT,
@@ -12,9 +11,28 @@ import {
   type Slide 
 } from "./carouselData";
 
+// Pan-tilt animation for carousel images
+const panTiltAnimation = {
+  initial: { 
+    scale: 1.2,
+  },
+  animate: {
+    scale: 1.2,
+    x: [-10, 10, -10],
+    y: [-10, 10, -10],
+    transition: {
+      duration: 20,
+      ease: "linear",
+      repeat: Infinity,
+      repeatType: "reverse",
+    }
+  }
+};
+
 export default function ServiceCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   
   // Typing state for services, title, and description
   const [typedServices, setTypedServices] = useState<string[]>([]);
@@ -137,6 +155,21 @@ export default function ServiceCarousel() {
     };
   }, [currentIndex, slides]);
 
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, slides.length]);
+
+  // Pause auto-play on hover
+  const handleMouseEnter = () => setIsAutoPlaying(false);
+  const handleMouseLeave = () => setIsAutoPlaying(true);
+
   // Navigation handlers
   const handlePrevious = useCallback(() => {
     setDirection(1);
@@ -153,9 +186,11 @@ export default function ServiceCarousel() {
   }, [slides.length]);
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden">
-      <Navbar />
-
+    <div 
+      className="relative w-full min-h-screen overflow-hidden"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {/* Hero Section */}
       <div className="absolute inset-0 z-10">
         <AnimatePresence initial={false}>
@@ -168,14 +203,20 @@ export default function ServiceCarousel() {
             className="absolute inset-0"
             style={{ zIndex: 10 }}
           >
-            <Image 
-              src={slides[currentIndex].image}
-              alt={slides[currentIndex].title}
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
+            <motion.div
+              initial={panTiltAnimation.initial}
+              animate={panTiltAnimation.animate}
+              className="relative h-full w-full"
+            >
+              <Image 
+                src={slides[currentIndex].image}
+                alt={slides[currentIndex].title}
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
+            </motion.div>
           </motion.div>
 
           {/* New Image (scales to cover) */}
@@ -189,14 +230,20 @@ export default function ServiceCarousel() {
             className="absolute inset-0"
             style={{ zIndex: 11 }}
           >
-            <Image 
-              src={slides[(currentIndex + 1) % slides.length].image}
-              alt={slides[(currentIndex + 1) % slides.length].title}
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
+            <motion.div
+              initial={panTiltAnimation.initial}
+              animate={panTiltAnimation.animate}
+              className="relative h-full w-full"
+            >
+              <Image 
+                src={slides[(currentIndex + 1) % slides.length].image}
+                alt={slides[(currentIndex + 1) % slides.length].title}
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
+            </motion.div>
           </motion.div>
 
           {/* Text Content */}

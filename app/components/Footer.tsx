@@ -14,7 +14,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-[rgb(0,0,0)] text-[rgb(255,255,255)] py-12 px-4 md:px-20">
+    <footer className="bg-transparent text-[rgb(255,255,255)] py-12 px-4 md:px-20">
       <div className="container mx-auto grid md:grid-cols-4 gap-8">
         {/* Company Info */}
         <div>

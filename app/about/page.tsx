@@ -1,192 +1,276 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { 
-  Leaf, 
-  Sprout, 
+  motion, 
+  AnimatePresence, 
+  useInView, 
+  useAnimation 
+} from 'framer-motion';
+import { 
   Palette, 
-  Scissors, 
-  Lightbulb, 
-  Trophy 
+  Brush, 
+  Layers, 
+  Feather,
+  Wind,
+  Droplet
 } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
-// Team Member Type
-type TeamMember = {
-  name: string;
-  role: string;
-  bio: string;
+// Artistic Project Type
+type ArtisticProject = {
+  id: number;
+  title: string;
+  concept: string;
   image: string;
+  mediums: string[];
+  brushstroke: string;
 };
 
-// Team Members Data
-const teamMembers: TeamMember[] = [
+// Artistic Projects as Creative Expressions
+const artisticProjects: ArtisticProject[] = [
   {
-    name: "Emily Rodriguez",
-    role: "Lead Landscape Architect",
-    bio: "With 15 years of experience, Emily transforms outdoor spaces into living art.",
-    image: "/team/emily.jpg"
+    id: 1,
+    title: "Ephemeral Landscapes",
+    concept: "Capturing the transient beauty of human experience through fluid, transformative spatial design.",
+    image: "/projects/ephemeral-landscape.jpg",
+    mediums: ["Watercolor", "Digital Projection", "Organic Textures"],
+    brushstroke: "Soft, blending boundaries between physical and emotional realms"
   },
   {
-    name: "Michael Chen",
-    role: "Creative Director",
-    bio: "A visionary who blends architectural principles with natural aesthetics.",
-    image: "/team/michael.jpg"
+    id: 2,
+    title: "Chromatic Resonance",
+    concept: "Exploring the emotional language of color and how spatial arrangements can evoke profound sensory experiences.",
+    image: "/projects/chromatic-resonance.jpg",
+    mediums: ["Gradient Surfaces", "Light Installations", "Textural Mapping"],
+    brushstroke: "Vibrant, overlapping color fields that pulse with emotional intensity"
   },
   {
-    name: "Sarah Thompson",
-    role: "Sustainability Expert",
-    bio: "Passionate about eco-friendly design and native plant ecosystems.",
-    image: "/team/sarah.jpg"
+    id: 3,
+    title: "Poetic Geometries",
+    concept: "Transforming architectural spaces into living poetry, where form becomes a narrative of human connection.",
+    image: "/projects/poetic-geometries.jpg",
+    mediums: ["Sculptural Surfaces", "Kinetic Elements", "Ambient Soundscapes"],
+    brushstroke: "Fluid, lyrical lines that suggest movement and emotional depth"
   }
 ];
 
-// Core Values and Services
-const coreValues = [
-  {
-    icon: Leaf,
-    title: "Sustainability",
-    description: "Committed to environmentally responsible design practices."
-  },
-  {
-    icon: Palette,
-    title: "Creativity",
-    description: "Innovative solutions that reflect your unique vision."
-  },
-  {
-    icon: Scissors,
-    title: "Precision",
-    description: "Meticulous attention to detail in every landscape project."
-  }
-];
+export default function ArtisticAboutPage() {
+  const [currentProject, setCurrentProject] = useState<number>(0);
+  const projectRef = useRef<HTMLElement>(null);
+  const isInView = useInView(projectRef, { once: true });
+  const controls = useAnimation();
 
-export default function AboutPage() {
+  const nextProject = () => {
+    setCurrentProject((prev: number) => 
+      prev === artisticProjects.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevProject = () => {
+    setCurrentProject((prev: number) => 
+      prev === 0 ? artisticProjects.length - 1 : prev - 1
+    );
+  };
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start('visible');
+    }
+  }, [isInView, controls]);
+
   return (
-    <div className="bg-black text-white min-h-screen">
-      <Navbar />
-      
-      {/* Hero Section */}
-      <div className="relative h-[60vh] overflow-hidden">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-transparent flex flex-col justify-center items-center p-8"
+    >
+      {/* Artistic Background Overlay */}
+      <div className="absolute inset-0 z-0 opacity-20">
         <Image 
-          src="/about-hero.jpg" 
-          alt="Landscape Design Studio" 
+          src="/about/watercolor-texture.svg" 
+          alt="Artistic Watercolor Texture" 
           fill 
-          className="absolute inset-0 object-cover opacity-50"
+          className="object-cover mix-blend-overlay"
         />
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-          <div className="text-center px-4">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              Crafting Landscapes, 
-              <br />
-              Inspiring Spaces
-            </h1>
-            <p className="text-lg md:text-xl max-w-2xl mx-auto">
-              We transform outdoor environments into breathtaking, functional, and sustainable landscapes that tell your unique story.
-            </p>
-          </div>
-        </div>
       </div>
 
-      {/* Our Story Section */}
-      <section className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 className="text-3xl font-bold mb-6">Our Story</h2>
-          <p className="text-gray-300 mb-4">
-            Founded in 2010, our landscape design studio has been dedicated to creating 
-            transformative outdoor spaces that harmonize with their environment.
-          </p>
-          <p className="text-gray-300">
-            We believe that every landscape is a canvas, and every client has a unique 
-            vision waiting to be brought to life. Our multidisciplinary team combines 
-            architectural precision, ecological sensitivity, and artistic creativity.
-          </p>
-        </div>
-        <div className="relative aspect-video">
-          <Image 
-            src="/studio-story.jpg" 
-            alt="Our Studio" 
-            fill 
-            className="rounded-lg object-cover shadow-xl"
-          />
-        </div>
-      </section>
+      {/* Hero Section - Artistic Intro */}
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 min-h-[80vh] flex items-center justify-center text-center px-4"
+      >
+        <div className="max-w-4xl relative">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-8"
+          >
+            <Palette className="mx-auto w-16 h-16 text-emerald-400 mb-4 animate-pulse" />
+          </motion.div>
 
-      {/* Core Values */}
-      <section className="bg-white/5 py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Core Values</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {coreValues.map((value, index) => {
-              const Icon = value.icon;
-              return (
-                <div 
-                  key={index} 
-                  className="bg-white/10 p-6 rounded-lg text-center hover:bg-white/20 transition-colors"
-                >
-                  <Icon className="mx-auto mb-4 text-white" size={48} />
-                  <h3 className="text-xl font-semibold mb-3">{value.title}</h3>
-                  <p className="text-gray-300">{value.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 drop-shadow-[0_5px_5px_rgba(16,185,129,0.3)]">
+            Designing as Living Art
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 italic">
+            We don't create spaces. We compose symphonies of light, texture, and emotion—where every design is a brushstroke, and every room tells a story.
+          </p>
 
-      {/* Team Section */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Meet Our Team</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {teamMembers.map((member, index) => (
-            <div 
-              key={index} 
-              className="bg-white/10 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all"
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <a 
+              href="/contact" 
+              className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-500 rounded-full text-white hover:from-emerald-700 hover:to-teal-600 transition-all duration-300 inline-flex items-center space-x-2 shadow-lg hover:shadow-emerald-500/50"
             >
-              <div className="relative aspect-square">
-                <Image 
-                  src={member.image} 
-                  alt={member.name} 
-                  fill 
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-6 text-center">
-                <h3 className="text-xl font-semibold">{member.name}</h3>
-                <p className="text-gray-400 mb-3">{member.role}</p>
-                <p className="text-gray-300">{member.bio}</p>
-              </div>
-            </div>
-          ))}
+              <Brush className="mr-2" /> Craft Your Vision
+            </a>
+          </motion.div>
         </div>
-      </section>
+      </motion.div>
 
-      {/* Achievements */}
-      <section className="bg-white/5 py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Achievements</h2>
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <Trophy className="mx-auto mb-4 text-white" size={48} />
-              <h3 className="text-2xl font-bold">15+</h3>
-              <p className="text-gray-300">Years of Experience</p>
+      {/* Artistic Projects Carousel */}
+      <section 
+        ref={projectRef}
+        className="relative z-10 py-20 px-4"
+      >
+        <motion.div 
+          initial="hidden"
+          animate={controls}
+          variants={{
+            hidden: { opacity: 0, y: 50 },
+            visible: { 
+              opacity: 1, 
+              y: 0,
+              transition: {
+                duration: 0.8,
+                ease: "easeOut"
+              }
+            }
+          }}
+          className="max-w-6xl mx-auto"
+        >
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">
+              Artistic Design Explorations
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto italic">
+              Each project is a canvas, each space a masterpiece waiting to be unveiled.
+            </p>
+          </div>
+
+          <div className="relative group">
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={currentProject}
+                initial={{ opacity: 0, x: 100, rotate: 5 }}
+                animate={{ opacity: 1, x: 0, rotate: 0 }}
+                exit={{ opacity: 0, x: -100, rotate: -5 }}
+                transition={{ 
+                  duration: 0.8,
+                  type: "spring",
+                  stiffness: 50
+                }}
+                className="grid md:grid-cols-2 gap-12 items-center bg-white/5 backdrop-blur-lg rounded-3xl p-12 border border-white/10 shadow-2xl"
+              >
+                <div className="space-y-6">
+                  <motion.h3 
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500"
+                  >
+                    {artisticProjects[currentProject].title}
+                  </motion.h3>
+                  <p className="text-gray-300 text-lg italic">
+                    "{artisticProjects[currentProject].concept}"
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    {artisticProjects[currentProject].mediums.map((medium, index) => (
+                      <motion.span
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="px-4 py-2 bg-white/10 rounded-full text-sm text-emerald-300 border border-emerald-500/30"
+                      >
+                        {medium}
+                      </motion.span>
+                    ))}
+                  </div>
+                  <p className="text-gray-400 italic">
+                    <Feather className="inline mr-2 text-emerald-400" />
+                    {artisticProjects[currentProject].brushstroke}
+                  </p>
+                </div>
+                <div className="relative group">
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0, rotate: -5 }}
+                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="rounded-3xl overflow-hidden shadow-2xl border-8 border-emerald-500/30 group-hover:scale-105 transition-transform duration-500"
+                  >
+                    <Image 
+                      src={artisticProjects[currentProject].image}
+                      alt={artisticProjects[currentProject].title}
+                      width={800}
+                      height={600}
+                      className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </motion.div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navigation Buttons */}
+            <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <motion.button
+                onClick={prevProject}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="bg-white/10 backdrop-blur-lg p-3 rounded-full hover:bg-white/20 transition-all"
+              >
+                <Wind className="w-8 h-8 text-emerald-400" />
+              </motion.button>
+              <motion.button
+                onClick={nextProject}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="bg-white/10 backdrop-blur-lg p-3 rounded-full hover:bg-white/20 transition-all"
+              >
+                <Droplet className="w-8 h-8 text-teal-400" />
+              </motion.button>
             </div>
-            <div>
-              <Lightbulb className="mx-auto mb-4 text-white" size={48} />
-              <h3 className="text-2xl font-bold">250+</h3>
-              <p className="text-gray-300">Completed Projects</p>
-            </div>
-            <div>
-              <Sprout className="mx-auto mb-4 text-white" size={48} />
-              <h3 className="text-2xl font-bold">100%</h3>
-              <p className="text-gray-300">Sustainable Designs</p>
+
+            {/* Pagination Dots */}
+            <div className="flex justify-center mt-12 space-x-3">
+              {artisticProjects.map((_, index) => (
+                <motion.div
+                  key={index}
+                  onClick={() => setCurrentProject(index)}
+                  initial={{ scale: 0.7, opacity: 0.5 }}
+                  animate={{ 
+                    scale: currentProject === index ? 1.2 : 1,
+                    opacity: currentProject === index ? 1 : 0.5,
+                    backgroundColor: currentProject === index 
+                      ? 'rgba(16, 185, 129, 0.8)' 
+                      : 'rgba(255, 255, 255, 0.2)'
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-3 h-3 rounded-full cursor-pointer"
+                />
+              ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
-
-      <Footer />
-    </div>
+    </motion.div>
   );
 }
