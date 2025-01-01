@@ -139,16 +139,16 @@ export default function ServiceCarousel() {
 
   // Navigation handlers
   const handlePrevious = useCallback(() => {
-    setDirection(-1);
+    setDirection(1);
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
+      prevIndex === slides.length - 1 ? 0 : prevIndex + 1
     );
   }, [slides.length]);
 
   const handleNext = useCallback(() => {
-    setDirection(1);
+    setDirection(-1);
     setCurrentIndex((prevIndex) => 
-      prevIndex === slides.length - 1 ? 0 : prevIndex + 1
+      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
     );
   }, [slides.length]);
 

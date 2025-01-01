@@ -57,9 +57,9 @@ const Navbar = () => {
           <div className="flex items-center space-x-2">
             <Link href="/" className="flex items-center">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">B</span>
+                <span className="text-white font-bold text-3xl">B</span>
               </div>
-              <span className="text-white font-bold text-xl">Bulox</span>
+              <span className="text-white font-bold text-3xl">Bulox</span>
             </Link>
           </div>
 
