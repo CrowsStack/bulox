@@ -2,273 +2,249 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { 
-  motion, 
-  AnimatePresence, 
-  useInView, 
-  useAnimation 
-} from 'framer-motion';
-import { 
-  Palette, 
+  HardHat, 
+  Home, 
+  Ruler, 
   Brush, 
-  Layers, 
-  Feather,
-  Wind,
-  Droplet
+  Feather, 
+  Wind, 
+  Droplet,
+  Award, Globe, Trophy 
 } from 'lucide-react';
 
-// Artistic Project Type
-type ArtisticProject = {
+// Define the project type for interior design and finishing
+interface InteriorProject {
   id: number;
   title: string;
   concept: string;
   image: string;
-  mediums: string[];
-  brushstroke: string;
-};
+  services: string[];
+  specialtyWork: string;
+}
 
-// Artistic Projects as Creative Expressions
-const artisticProjects: ArtisticProject[] = [
+// Curated Interior Design and Finishing Projects
+const interiorProjects: InteriorProject[] = [
   {
     id: 1,
-    title: "Ephemeral Landscapes",
-    concept: "Capturing the transient beauty of human experience through fluid, transformative spatial design.",
-    image: "/projects/ephemeral-landscape.jpg",
-    mediums: ["Watercolor", "Digital Projection", "Organic Textures"],
-    brushstroke: "Soft, blending boundaries between physical and emotional realms"
+    title: "Luxury Living Room Transformation",
+    concept: "Seamless blend of modern elegance and functional design",
+    image: "/images/living-room-design.jpg",
+    services: ["TV Wall Woodwork", "Custom Furniture", "Pop Ceiling Design"],
+    specialtyWork: "Crafted a sophisticated living space with intricate woodwork and modern pop design elements"
   },
   {
     id: 2,
-    title: "Chromatic Resonance",
-    concept: "Exploring the emotional language of color and how spatial arrangements can evoke profound sensory experiences.",
-    image: "/projects/chromatic-resonance.jpg",
-    mediums: ["Gradient Surfaces", "Light Installations", "Textural Mapping"],
-    brushstroke: "Vibrant, overlapping color fields that pulse with emotional intensity"
+    title: "Modern Kitchen and Concrete Flooring",
+    concept: "Industrial chic meets culinary sophistication",
+    image: "/images/kitchen-design.jpg",
+    services: ["Concrete Floor Finishing", "Kitchen Cabinetry", "Interior Styling"],
+    specialtyWork: "Implemented a seamless concrete floor with custom wooden accents and modern kitchen layout"
   },
   {
     id: 3,
-    title: "Poetic Geometries",
-    concept: "Transforming architectural spaces into living poetry, where form becomes a narrative of human connection.",
-    image: "/projects/poetic-geometries.jpg",
-    mediums: ["Sculptural Surfaces", "Kinetic Elements", "Ambient Soundscapes"],
-    brushstroke: "Fluid, lyrical lines that suggest movement and emotional depth"
+    title: "Exterior House Finishing Masterpiece",
+    concept: "Architectural harmony with nature-inspired design",
+    image: "/images/exterior-design.jpg",
+    services: ["Exterior Painting", "Landscape Integration", "Architectural Woodwork"],
+    specialtyWork: "Created a stunning exterior finish that complements the natural surroundings and architectural integrity"
   }
 ];
 
-export default function ArtisticAboutPage() {
-  const [currentProject, setCurrentProject] = useState<number>(0);
-  const projectRef = useRef<HTMLElement>(null);
-  const isInView = useInView(projectRef, { once: true });
-  const controls = useAnimation();
+// Team Member Type
+type TeamMember = {
+  name: string;
+  title: string;
+  bio: string;
+  image: string;
+  achievements: string[];
+};
 
-  const nextProject = () => {
-    setCurrentProject((prev: number) => 
-      prev === artisticProjects.length - 1 ? 0 : prev + 1
-    );
-  };
+// Team Members Data
+const teamMembers: TeamMember[] = [
+  {
+    name: "Adebayo Oladele",
+    title: "Founder & CEO",
+    bio: "A visionary leader with over 15 years of experience in interior and exterior design, Adebayo has transformed countless spaces into breathtaking living environments. His passion for innovative design and commitment to excellence drives the company's core values.",
+    image: "/images/team/ceo.jpg",
+    achievements: [
+      "National Design Innovation Award 2022",
+      "Recognized as Top 30 Designers Under 40",
+      "Featured in Architectural Digest Nigeria"
+    ]
+  },
+  {
+    name: "Chioma Nwosu",
+    title: "Chief Design Officer",
+    bio: "With a master's in Interior Architecture, Chioma brings a unique blend of creativity and technical expertise. She specializes in creating harmonious spaces that tell a story and reflect individual personalities.",
+    image: "/images/team/design-officer.jpg",
+    achievements: [
+      "International Design Excellence Award",
+      "Lead Designer for Multiple Award-Winning Projects",
+      "Guest Lecturer at Design Institutes"
+    ]
+  },
+  {
+    name: "Michael Okonkwo",
+    title: "Head of Woodwork & Craftsmanship",
+    bio: "A master craftsman with decades of experience, Michael transforms wood into art. His intricate woodwork and attention to detail have earned him recognition as one of the top artisans in the country.",
+    image: "/images/team/woodwork-head.jpg",
+    achievements: [
+      "Master Craftsman Certification",
+      "Traditional Woodworking Techniques Preservationist",
+      "Sustainable Design Innovation Award"
+    ]
+  },
+  {
+    name: "Fatima Ahmed",
+    title: "Exterior Finishing Specialist",
+    bio: "An expert in exterior design and finishing, Fatima has a keen eye for creating stunning facades that enhance architectural beauty and increase property value.",
+    image: "/images/team/exterior-specialist.jpg",
+    achievements: [
+      "Exterior Design Innovator of the Year",
+      "Sustainable Building Materials Expert",
+      "Urban Design Community Impact Award"
+    ]
+  }
+];
 
-  const prevProject = () => {
-    setCurrentProject((prev: number) => 
-      prev === 0 ? artisticProjects.length - 1 : prev - 1
-    );
-  };
-
-  useEffect(() => {
-    if (isInView) {
-      controls.start('visible');
-    }
-  }, [isInView, controls]);
-
+export default function AboutPage() {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-transparent flex flex-col justify-center items-center p-8"
+      className="min-h-screen bg-transparent text-white"
     >
-      {/* Artistic Background Overlay */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <Image 
-          src="/about/watercolor-texture.svg" 
-          alt="Artistic Watercolor Texture" 
-          fill 
-          className="object-cover mix-blend-overlay"
-        />
-      </div>
-
-      {/* Hero Section - Artistic Intro */}
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 min-h-[80vh] flex items-center justify-center text-center px-4"
-      >
-        <div className="max-w-4xl relative">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-8"
-          >
-            <Palette className="mx-auto w-16 h-16 text-emerald-400 mb-4 animate-pulse" />
-          </motion.div>
-
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 drop-shadow-[0_5px_5px_rgba(16,185,129,0.3)]">
-            Designing as Living Art
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 italic">
-            We don't create spaces. We compose symphonies of light, texture, and emotion—where every design is a brushstroke, and every room tells a story.
-          </p>
-
+      {/* Hero Section */}
+      <section className="relative py-20 px-4 md:px-8 lg:px-16">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <motion.div 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
           >
-            <a 
-              href="/contact" 
-              className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-500 rounded-full text-white hover:from-emerald-700 hover:to-teal-600 transition-all duration-300 inline-flex items-center space-x-2 shadow-lg hover:shadow-emerald-500/50"
-            >
-              <Brush className="mr-2" /> Craft Your Vision
-            </a>
+            <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">
+              Crafting Spaces, Defining Lifestyles
+            </h1>
+            <p className="text-xl text-gray-300 leading-relaxed">
+              We transform houses into homes through meticulous interior and exterior finishing, 
+              innovative design, and exceptional craftsmanship.
+            </p>
+            <div className="flex space-x-4">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <a 
+                  href="/services" 
+                  className="px-8 py-4 bg-transparent border border-emerald-500 text-emerald-400 rounded-full hover:bg-emerald-500/10 transition-all duration-300 inline-flex items-center space-x-2 shadow-lg hover:shadow-emerald-500/50"
+                >
+                  <HardHat className="mr-2" /> Explore Services
+                </a>
+              </motion.div>
+            </div>
+          </motion.div>
+          
+          <motion.div
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="relative"
+          >
+            <div className="rounded-3xl overflow-hidden border-2 border-emerald-500/30">
+              <Image 
+                src="/images/hero-design.jpg" 
+                alt="Interior Design Masterpiece" 
+                width={800} 
+                height={600} 
+                className="w-full h-auto object-cover"
+              />
+            </div>
           </motion.div>
         </div>
-      </motion.div>
+      </section>
 
-      {/* Artistic Projects Carousel */}
-      <section 
-        ref={projectRef}
-        className="relative z-10 py-20 px-4"
-      >
-        <motion.div 
-          initial="hidden"
-          animate={controls}
-          variants={{
-            hidden: { opacity: 0, y: 50 },
-            visible: { 
-              opacity: 1, 
-              y: 0,
-              transition: {
-                duration: 0.8,
-                ease: "easeOut"
-              }
-            }
-          }}
+      {/* Team Section */}
+      <section className="relative py-20 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
           className="max-w-6xl mx-auto"
         >
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">
-              Artistic Design Explorations
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto italic">
-              Each project is a canvas, each space a masterpiece waiting to be unveiled.
-            </p>
-          </div>
+          <h1 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+            Our Leadership Team
+          </h1>
 
-          <div className="relative group">
-            <AnimatePresence mode="wait">
-              <motion.div 
-                key={currentProject}
-                initial={{ opacity: 0, x: 100, rotate: 5 }}
-                animate={{ opacity: 1, x: 0, rotate: 0 }}
-                exit={{ opacity: 0, x: -100, rotate: -5 }}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {teamMembers.map((member, index) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ 
-                  duration: 0.8,
-                  type: "spring",
-                  stiffness: 50
+                  duration: 0.5, 
+                  delay: index * 0.2 
                 }}
-                className="grid md:grid-cols-2 gap-12 items-center bg-white/5 backdrop-blur-lg rounded-3xl p-12 border border-white/10 shadow-2xl"
+                className="bg-white/10 rounded-xl p-6 transform transition-all hover:scale-105 hover:shadow-2xl"
               >
-                <div className="space-y-6">
-                  <motion.h3 
-                    initial={{ x: -50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500"
-                  >
-                    {artisticProjects[currentProject].title}
-                  </motion.h3>
-                  <p className="text-gray-300 text-lg italic">
-                    "{artisticProjects[currentProject].concept}"
+                <div className="relative w-full aspect-square mb-6 rounded-full overflow-hidden border-4 border-emerald-500">
+                  <Image 
+                    src={member.image} 
+                    alt={member.name} 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                
+                <div className="text-center">
+                  <h2 className="text-2xl font-semibold text-emerald-400 mb-2">
+                    {member.name}
+                  </h2>
+                  <p className="text-gray-300 mb-4">{member.title}</p>
+                  
+                  <p className="text-sm text-gray-400 mb-6">
+                    {member.bio}
                   </p>
-                  <div className="flex flex-wrap gap-3">
-                    {artisticProjects[currentProject].mediums.map((medium, index) => (
-                      <motion.span
-                        key={index}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="px-4 py-2 bg-white/10 rounded-full text-sm text-emerald-300 border border-emerald-500/30"
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-medium text-emerald-500">
+                      Key Achievements
+                    </h3>
+                    {member.achievements.map((achievement, idx) => (
+                      <div 
+                        key={idx} 
+                        className="flex items-center space-x-2 text-gray-300"
                       >
-                        {medium}
-                      </motion.span>
+                        <Award className="w-4 h-4 text-emerald-400" />
+                        <span className="text-xs">{achievement}</span>
+                      </div>
                     ))}
                   </div>
-                  <p className="text-gray-400 italic">
-                    <Feather className="inline mr-2 text-emerald-400" />
-                    {artisticProjects[currentProject].brushstroke}
-                  </p>
-                </div>
-                <div className="relative group">
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0, rotate: -5 }}
-                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="rounded-3xl overflow-hidden shadow-2xl border-8 border-emerald-500/30 group-hover:scale-105 transition-transform duration-500"
-                  >
-                    <Image 
-                      src={artisticProjects[currentProject].image}
-                      alt={artisticProjects[currentProject].title}
-                      width={800}
-                      height={600}
-                      className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </motion.div>
                 </div>
               </motion.div>
-            </AnimatePresence>
-
-            {/* Navigation Buttons */}
-            <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <motion.button
-                onClick={prevProject}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="bg-white/10 backdrop-blur-lg p-3 rounded-full hover:bg-white/20 transition-all"
-              >
-                <Wind className="w-8 h-8 text-emerald-400" />
-              </motion.button>
-              <motion.button
-                onClick={nextProject}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="bg-white/10 backdrop-blur-lg p-3 rounded-full hover:bg-white/20 transition-all"
-              >
-                <Droplet className="w-8 h-8 text-teal-400" />
-              </motion.button>
-            </div>
-
-            {/* Pagination Dots */}
-            <div className="flex justify-center mt-12 space-x-3">
-              {artisticProjects.map((_, index) => (
-                <motion.div
-                  key={index}
-                  onClick={() => setCurrentProject(index)}
-                  initial={{ scale: 0.7, opacity: 0.5 }}
-                  animate={{ 
-                    scale: currentProject === index ? 1.2 : 1,
-                    opacity: currentProject === index ? 1 : 0.5,
-                    backgroundColor: currentProject === index 
-                      ? 'rgba(16, 185, 129, 0.8)' 
-                      : 'rgba(255, 255, 255, 0.2)'
-                  }}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-3 h-3 rounded-full cursor-pointer"
-                />
-              ))}
-            </div>
+            ))}
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="mt-16 text-center max-w-3xl mx-auto"
+          >
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+              Our Collective Vision
+            </h2>
+            <p className="text-gray-300 leading-relaxed">
+              At the heart of our company is a commitment to transforming spaces into living art. 
+              Each team member brings a unique perspective, blending creativity, technical expertise, 
+              and a passion for design. We believe that every space tells a story, and our mission 
+              is to help you tell yours through exceptional interior and exterior finishing.
+            </p>
+          </motion.div>
         </motion.div>
       </section>
     </motion.div>

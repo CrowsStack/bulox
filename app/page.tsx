@@ -29,16 +29,16 @@ const stats = [
 
 const features = [
   {
-    title: 'Artistic Vision',
-    description: 'We transform spaces into living works of art, where every detail tells a story.'
+    title: "Your Story, Our Canvas",
+    description: "We believe every space tells a story. Our designs transform your personal dreams into beautiful, living memories that inspire and comfort you every day."
   },
   {
-    title: 'Innovation',
-    description: 'Pushing boundaries with cutting-edge design solutions and creative approaches.'
+    title: "Comfort Meets Creativity",
+    description: "Design isn't just about looks—it's about how a space makes you feel. We craft environments that wrap you in warmth, spark joy, and make you feel truly at home."
   },
   {
-    title: 'Sustainability',
-    description: 'Creating eco-conscious designs that harmonize with nature and the environment.'
+    title: "Sustainable Happiness",
+    description: "We design with purpose, creating spaces that not only look amazing but also support your well-being and respect our planet. Beautiful design can be kind to you and the environment."
   }
 ];
 

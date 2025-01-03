@@ -39,6 +39,8 @@ export default function ServiceCarousel() {
   const [typedTitle, setTypedTitle] = useState('');
   const [typedDescription, setTypedDescription] = useState('');
   const [typedLocation, setTypedLocation] = useState('');
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const [typingCycles, setTypingCycles] = useState(0);
 
   // Create a circular array of all slides for preview
   const previewSlides = useMemo(() => {
@@ -72,6 +74,8 @@ export default function ServiceCarousel() {
     setTypedTitle('');
     setTypedDescription('');
     setTypedLocation('');
+    setIsTypingComplete(false);
+    setTypingCycles(0);
 
     const services = slides[currentIndex].services;
     const title = slides[currentIndex].title;
@@ -87,7 +91,8 @@ export default function ServiceCarousel() {
     let globalCurrentState = {
       isDeleting: false,
       currentChar: 0,
-      pauseCounter: 0
+      pauseCounter: 0,
+      typingCycle: 0 // Track complete typing/deleting cycles
     };
 
     const PAUSE_DURATION = 5000; // 5 seconds pause after typing
@@ -144,7 +149,21 @@ export default function ServiceCarousel() {
         if (globalCurrentState.pauseCounter >= PAUSE_DURATION / 2) {
           globalCurrentState.isDeleting = false;
           globalCurrentState.pauseCounter = 0;
+          globalCurrentState.typingCycle++; // Increment cycle
         }
+      }
+
+      // Set typing complete and update cycles after two full cycles (type and delete)
+      if (globalCurrentState.typingCycle >= 2) {
+        setTypingCycles(prev => prev + 1);
+        
+        // Reset typing cycle after updating
+        globalCurrentState.typingCycle = 0;
+      }
+
+      // Set typing complete when we've done two full sets of typing
+      if (typingCycles >= 2) {
+        setIsTypingComplete(true);
       }
 
     }, TYPING_SPEED);
@@ -153,18 +172,21 @@ export default function ServiceCarousel() {
     return () => {
       clearInterval(interval);
     };
-  }, [currentIndex, slides]);
+  }, [currentIndex, slides, typingCycles]);
 
   // Auto-play functionality
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || !isTypingComplete) return;
 
-    const timer = setInterval(() => {
+    const timer = setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
-    }, 5000); // Change slide every 5 seconds
+      // Reset typing states for next slide
+      setIsTypingComplete(false);
+      setTypingCycles(0);
+    }, 500); // Small buffer after typing complete
 
-    return () => clearInterval(timer);
-  }, [isAutoPlaying, slides.length]);
+    return () => clearTimeout(timer);
+  }, [isAutoPlaying, isTypingComplete, slides.length, currentIndex]);
 
   // Pause auto-play on hover
   const handleMouseEnter = () => setIsAutoPlaying(false);
@@ -172,16 +194,16 @@ export default function ServiceCarousel() {
 
   // Navigation handlers
   const handlePrevious = useCallback(() => {
-    setDirection(1);
+    setDirection(-1);
     setCurrentIndex((prevIndex) => 
-      prevIndex === slides.length - 1 ? 0 : prevIndex + 1
+      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
     );
   }, [slides.length]);
 
   const handleNext = useCallback(() => {
-    setDirection(-1);
+    setDirection(1);
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
+      prevIndex === slides.length - 1 ? 0 : prevIndex + 1
     );
   }, [slides.length]);
 
@@ -339,27 +361,32 @@ export default function ServiceCarousel() {
                   layout
                   initial={{ 
                     opacity: 0,
-                    x: direction > 0 ? 100 : -100,
-                    scale: reversedIndex === 0 ? 1.2 : 0.9
+                    x: direction > 0 ? 20 : -20,
+                    scale: reversedIndex === 0 ? 1.05 : 0.95,
+                    rotateY: direction > 0 ? 10 : -10
                   }}
                   animate={{ 
                     opacity: 1,
                     x: 0,
-                    scale: reversedIndex === 0 ? 1.2 : 1,
+                    scale: reversedIndex === 0 ? 1.05 : 1,
+                    rotateY: 0,
                     transition: {
-                      duration: 0.3,
-                      delay: index * 0.05,
-                      ease: "easeOut"
+                      type: "tween",
+                      duration: 0.5,
+                      ease: "easeInOut",
+                      delay: index * 0.05
                     }
                   }}
                   exit={{ 
-                    opacity: 0,
-                    x: direction > 0 ? -100 : 100,
-                    scale: reversedIndex === 0 ? 1.2 : 0.9,
+                    opacity: 0.5,
+                    x: direction > 0 ? -20 : 20,
+                    scale: reversedIndex === 0 ? 1.05 : 0.95,
+                    rotateY: direction > 0 ? -10 : 10,
                     transition: {
-                      duration: 0.3,
-                      delay: index * 0.05,
-                      ease: "easeIn"
+                      type: "tween",
+                      duration: 0.5,
+                      ease: "easeInOut",
+                      delay: index * 0.05
                     }
                   }}
                   style={{
@@ -369,7 +396,7 @@ export default function ServiceCarousel() {
                     zIndex: reversedIndex === 0 ? 10 : 1
                   }}
                   className={`cursor-pointer overflow-hidden 
-                    transform hover:scale-110 transition-transform duration-200
+                    transform hover:scale-105 transition-transform duration-200
                     ${reversedIndex === 0 
                       ? 'w-32 h-40 max-md:w-[35%] max-md:h-24' 
                       : 'w-24 h-32 max-md:w-[25%] max-md:h-16'}
@@ -377,7 +404,6 @@ export default function ServiceCarousel() {
                     max-md:relative max-md:left-0 max-md:top-0`}
                   onClick={() => {
                     const targetIndex = slides.findIndex(s => s.title === slide.title);
-                    setDirection(targetIndex > currentIndex ? 1 : -1);
                     setCurrentIndex(targetIndex);
                   }}
                 >

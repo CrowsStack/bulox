@@ -74,6 +74,18 @@ const Navbar = () => {
               About
             </Link>
             <Link 
+              href="/portfolio" 
+              className="text-white hover:text-gray-300 transition-colors duration-300"
+            >
+              Portfolio
+            </Link>
+            <Link 
+              href="/services" 
+              className="text-white hover:text-gray-300 transition-colors duration-300"
+            >
+              Services
+            </Link>
+            <Link 
               href="/gallery" 
               className="text-white hover:text-gray-300 transition-colors duration-300"
             >
@@ -135,6 +147,20 @@ const Navbar = () => {
                 onClick={toggleMobileMenu}
               >
                 About
+              </Link>
+              <Link 
+                href="/portfolio" 
+                className="text-white text-2xl hover:text-gray-300 transition-colors duration-300"
+                onClick={toggleMobileMenu}
+              >
+                Portfolio
+              </Link>
+              <Link 
+                href="/services" 
+                className="text-white text-2xl hover:text-gray-300 transition-colors duration-300"
+                onClick={toggleMobileMenu}
+              >
+                Services
               </Link>
               <Link 
                 href="/gallery" 
