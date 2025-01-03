@@ -108,24 +108,6 @@ export default async function PortfolioProjectPage({ params }: PageProps) {
                 </ul>
               </div>
             </div>
-
-            {/* Client Testimonial */}
-            {project.clientTestimonial && (
-              <div className="bg-white/10 p-6 rounded-xl relative">
-                <Quote className="absolute top-4 left-4 text-emerald-400 opacity-50 w-12 h-12" />
-                <blockquote className="italic text-lg text-gray-200 mb-4 pl-16 pr-4">
-                  "{project.clientTestimonial.quote}"
-                </blockquote>
-                <div className="text-right">
-                  <p className="font-semibold text-emerald-400">
-                    {project.clientTestimonial.author}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {project.clientTestimonial.role}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Project Image Gallery */}
@@ -156,6 +138,26 @@ export default async function PortfolioProjectPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {/* Client Testimonial - Moved outside grid for mobile responsiveness */}
+        {project.clientTestimonial && (
+          <div className="mt-12 md:hidden">
+            <div className="bg-white/10 p-6 rounded-xl relative">
+              <Quote className="absolute top-4 left-4 text-emerald-400 opacity-50 w-12 h-12" />
+              <blockquote className="italic text-lg text-gray-200 mb-4 pl-16 pr-4">
+                "{project.clientTestimonial.quote}"
+              </blockquote>
+              <div className="text-right">
+                <p className="font-semibold text-emerald-400">
+                  {project.clientTestimonial.author}
+                </p>
+                <p className="text-sm text-gray-400">
+                  {project.clientTestimonial.role}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
