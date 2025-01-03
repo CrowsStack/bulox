@@ -160,17 +160,17 @@ export default function PortfolioPage() {
               </button>
             </div>
 
-            <div className="bg-white/10 p-2 rounded-xl inline-block">
-              <span className="text-emerald-400 font-semibold">
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <span className="bg-white/10 px-3 py-1 rounded-xl text-sm">
                 Category: {project.category}
               </span>
+              <Link href={`/portfolio/${project.slug}`} className="bg-white/10 p-2 rounded-xl inline-block">
+                <div className="flex items-center">
+                  <ExternalLink className="text-emerald-400 mr-2" />
+                  <span>View Project</span>
+                </div>
+              </Link>
             </div>
-            <Link href={`/portfolio/${project.slug}`} className="bg-white/10 p-2 rounded-xl inline-block mt-4">
-              <div className="flex items-center">
-                <ExternalLink className="text-emerald-400 mr-2" />
-                <span>View Project</span>
-              </div>
-            </Link>
           </motion.div>
 
           {/* Project Image Carousel */}
