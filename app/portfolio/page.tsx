@@ -1,27 +1,15 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Portfolio Item Type
-type PortfolioItem = {
-  id: number;
-  title: string;
-  subtitle: string;
-  description: string;
-  images: string[];
-  category: string;
-  slug: string;
-};
-
-// Portfolio Data
-const portfolioItems: PortfolioItem[] = [
+// Portfolio items for the carousel
+const portfolioItems = [
   {
-    id: 1,
+    id: 'exterior-finishing-commercial',
     title: "Exterior House Finishing Masterpiece",
     subtitle: "Architectural harmony with nature-inspired design",
     description: "Created a stunning exterior finish that complements the natural surroundings and architectural integrity. Featuring innovative landscape integration, precise exterior painting, and custom architectural woodwork.",
@@ -30,207 +18,243 @@ const portfolioItems: PortfolioItem[] = [
       "/services/exterior/ExteriorFinishing2.jpg",
       "/services/exterior/ExteriorFinishing3.jpg"
     ],
-    category: "Exterior Finishing",
-    slug: "exterior-house-masterpiece"
+    category: "Exterior Finishing"
   },
   {
-    id: 2,
-    title: "Modern Interior Pop Design",
-    subtitle: "Elevating Living Spaces with Artistic Ceiling Designs",
-    description: "Transformed a traditional living room with intricate pop ceiling designs, creating a dynamic and inspiring environment that reflects modern aesthetic sensibilities.",
-    images: [
-      "/services/pop/PopDesign.jpeg",
-      "/services/pop/PopDesign2.webp",
-      "/services/pop/PopDesign3.webp"
-    ],
-    category: "Interior Design",
-    slug: "modern-pop-design"
-  },
-  {
-    id: 3,
-    title: "Custom Woodwork TV Wall",
-    subtitle: "Functional Art in Living Room Design",
-    description: "Designed and crafted a bespoke wooden TV wall that serves as both a functional entertainment center and a stunning piece of interior art.",
+    id: 'custom-furniture-creation',
+    title: "Custom Woodwork Excellence",
+    subtitle: "Functional Art in Living Spaces",
+    description: "Designed and crafted bespoke furniture pieces that serve as both functional elements and stunning works of art, enhancing the overall aesthetic of living spaces.",
     images: [
       "/services/woodwork/woodwork.png",
       "/services/woodwork/woodwork2.png",
       "/services/woodwork/woodwork3.png"
     ],
-    category: "Woodwork",
-    slug: "custom-woodwork-tv-wall"
+    category: "Custom Furniture"
   },
   {
-    id: 4,
-    title: "Luxurious Concrete Flooring",
-    subtitle: "Merging Durability with Aesthetic Elegance",
-    description: "Implemented a high-end concrete flooring solution that combines industrial strength with sophisticated design, creating a seamless and modern floor finish.",
+    id: 'kitchen-renovation-modern',
+    title: "Modern Kitchen Design",
+    subtitle: "Contemporary Culinary Spaces",
+    description: "Transform kitchens into modern culinary havens with innovative design solutions, premium materials, and state-of-the-art appliance integration.",
+    images: [
+      "/services/furniture/CustomFurniture6.png",
+      "/services/furniture/CustomFurniture2.jpg",
+      "/services/furniture/CustomFurniture3.jpg"
+    ],
+    category: "Kitchen Design"
+  },
+  {
+    id: 'bathroom-remodeling-luxury',
+    title: "Luxury Bathroom Transformation",
+    subtitle: "Spa-Like Personal Retreats",
+    description: "Create luxurious bathroom spaces that combine elegant design with practical functionality, featuring premium fixtures and sophisticated finishes.",
+    images: [
+      "/gallery/image8.jpg",
+      "/gallery/image7.jpg",
+      "/gallery/image6.jpg"
+    ],
+    category: "Bathroom Design"
+  },
+  {
+    id: 'office-interiors-corporate',
+    title: "Modern Interior Pop Design",
+    subtitle: "Elevating Corporate Spaces",
+    description: "Transform office environments with innovative pop designs and modern aesthetics, creating inspiring workspaces that enhance productivity.",
+    images: [
+      "/services/pop/PopDesign.jpeg",
+      "/services/pop/PopDesign2.webp",
+      "/services/pop/PopDesign3.webp"
+    ],
+    category: "Office Interiors"
+  },
+  {
+    id: 'landscape-design-outdoor',
+    title: "Outdoor Living Excellence",
+    subtitle: "Natural Beauty Meets Design",
+    description: "Create stunning outdoor spaces that seamlessly blend with nature, featuring custom hardscaping, elegant water features, and strategic lighting design.",
     images: [
       "/services/concrete/Concrete.jpeg",
       "/services/concrete/Concrete2.jpg",
       "/services/concrete/Concrete3.webp"
     ],
-    category: "Flooring",
-    slug: "luxurious-concrete-flooring"
+    category: "Landscape Design"
+  },
+  {
+    id: 'home-staging-real-estate',
+    title: "Professional Home Staging",
+    subtitle: "Maximizing Property Appeal",
+    description: "Expert home staging services that enhance property presentation, creating appealing spaces that attract potential buyers and maximize value.",
+    images: [
+      "/service-carousel/serve2.jpg",
+      "/gallery/image2.jpg",
+      "/gallery/image3.jpg"
+    ],
+    category: "Home Staging"
+  },
+  {
+    id: 'sustainable-design-eco',
+    title: "Eco-Friendly Design Solutions",
+    subtitle: "Sustainable Living Spaces",
+    description: "Create environmentally conscious interiors using sustainable materials and energy-efficient solutions without compromising on style or comfort.",
+    images: [
+      "/gallery/image5.jpg",
+      "/gallery/image4.jpg",
+      "/gallery/image3.jpg"
+    ],
+    category: "Sustainable Design"
   }
 ];
 
 export default function PortfolioPage() {
-  const [currentProject, setCurrentProject] = useState(0);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
 
-  const project = portfolioItems[currentProject];
-
-  // Automatic image sliding
-  useEffect(() => {
-    const imageSlideInterval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
-        (prevIndex + 1) % project.images.length
-      );
-    }, 5000); // Change image every 5 seconds
-
-    return () => clearInterval(imageSlideInterval);
-  }, [project.images.length]);
-
-  const nextProject = () => {
-    setCurrentProject((prev) => (prev + 1) % portfolioItems.length);
-    setCurrentImageIndex(0);
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
   };
 
-  const prevProject = () => {
-    setCurrentProject((prev) => (prev - 1 + portfolioItems.length) % portfolioItems.length);
-    setCurrentImageIndex(0);
+  const swipeConfidenceThreshold = 10000;
+  const swipePower = (offset: number, velocity: number) => {
+    return Math.abs(offset) * velocity;
   };
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % project.images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + project.images.length) % project.images.length);
+  const paginate = (newDirection: number) => {
+    setDirection(newDirection);
+    setCurrentIndex((prevIndex) => (prevIndex + newDirection + portfolioItems.length) % portfolioItems.length);
   };
 
   return (
-    <div className="min-h-screen py-16 px-4 bg-transparent">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-6xl mx-auto bg-transparent"
-      >
-        <h1 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-          Our Design Portfolio
-        </h1>
-        <p className="text-center text-gray-300 max-w-2xl mx-auto mb-16">
-          Transforming spaces with precision, creativity, and unparalleled craftsmanship.
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Project Details */}
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6 bg-transparent"
-          >
-            <div>
-              <h2 className="text-3xl font-bold text-emerald-400 mb-2">
-                {project.title}
-              </h2>
-              <p className="text-xl text-gray-300 italic mb-4">
-                {project.subtitle}
-              </p>
-              <p className="text-gray-400 leading-relaxed">
-                {project.description}
-              </p>
-            </div>
-
-            <div className="flex space-x-4">
-              <button 
-                onClick={prevProject}
-                className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all"
-              >
-                <ArrowLeft className="text-emerald-400" />
-              </button>
-              <button 
-                onClick={nextProject}
-                className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all"
-              >
-                <ArrowRight className="text-emerald-400" />
-              </button>
-            </div>
-
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <span className="bg-white/10 px-3 py-1 rounded-xl text-sm">
-                Category: {project.category}
-              </span>
-              <Link href={`/portfolio/${project.slug}`} className="bg-white/10 p-2 rounded-xl inline-block">
-                <div className="flex items-center">
-                  <ExternalLink className="text-emerald-400 mr-2" />
-                  <span>View Project</span>
-                </div>
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Project Image Carousel */}
-          <motion.div
-            key={`image-${project.id}`}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative bg-transparent"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={project.images[currentImageIndex]}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                transition={{ duration: 0.5 }}
-                className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl"
-              >
-                <Image
-                  src={project.images[currentImageIndex]}
-                  alt={project.title}
-                  fill
-                  className="object-cover scale-110 hover:scale-125 transition-transform duration-500"
-                  priority
-                />
-              </motion.div>
-            </AnimatePresence>
-            
-            {/* Image Navigation */}
-            <button 
-              onClick={prevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full"
-            >
-              <ArrowLeft className="text-white" />
-            </button>
-            <button 
-              onClick={nextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full"
-            >
-              <ArrowRight className="text-white" />
-            </button>
-
-            {/* Image Indicators */}
-            <div className="flex justify-center space-x-2 mt-4">
-              {project.images.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`w-2 h-2 rounded-full ${
-                    index === currentImageIndex 
-                      ? 'bg-emerald-400' 
-                      : 'bg-white/30'
-                  }`}
-                />
-              ))}
-            </div>
-          </motion.div>
+    <div className="min-h-screen bg-transparent pt-24">
+      <div className="container mx-auto px-4 py-16">
+        {/* Header Section */}
+        <div className="text-center mb-16 bg-white/70 backdrop-blur-md rounded-xl p-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Our Portfolio</h1>
+          <p className="text-xl text-gray-600">Explore our latest projects and creative solutions</p>
         </div>
-      </motion.div>
+
+        {/* Carousel Section */}
+        <div className="relative h-[80vh] overflow-hidden bg-gray-100/70 backdrop-blur-md rounded-xl">
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 }
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
+
+                if (swipe < -swipeConfidenceThreshold) {
+                  paginate(1);
+                } else if (swipe > swipeConfidenceThreshold) {
+                  paginate(-1);
+                }
+              }}
+              className="absolute w-full h-full"
+            >
+              <div className="relative w-full h-full">
+                <Image
+                  src={portfolioItems[currentIndex].images[0]}
+                  alt={portfolioItems[currentIndex].title}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-40">
+                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                    <div className="max-w-3xl mx-auto">
+                      <p className="text-sm uppercase tracking-wider mb-2">
+                        {portfolioItems[currentIndex].category}
+                      </p>
+                      <h2 className="text-3xl md:text-4xl font-bold mb-2">
+                        {portfolioItems[currentIndex].title}
+                      </h2>
+                      <p className="text-lg mb-4">{portfolioItems[currentIndex].subtitle}</p>
+                      <p className="text-gray-200 mb-6">{portfolioItems[currentIndex].description}</p>
+                      <Link 
+                        href={`/portfolio/${portfolioItems[currentIndex].id}`}
+                        className="inline-block bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                      >
+                        View Project
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation Buttons */}
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full z-10"
+            onClick={() => paginate(-1)}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full z-10"
+            onClick={() => paginate(1)}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Portfolio Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+          {portfolioItems.map((item) => (
+            <Link 
+              key={item.id}
+              href={`/portfolio/${item.id}`}
+              className="group"
+            >
+              <div className="bg-white/70 backdrop-blur-md rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+                <div className="relative h-64 w-full">
+                  <Image
+                    src={item.images[0]}
+                    alt={item.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-xl font-bold text-gray-800">
+                      {item.title}
+                    </h2>
+                    <span className="text-sm text-gray-500 bg-gray-100/70 px-2 py-1 rounded-full">
+                      {item.category}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 line-clamp-3">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

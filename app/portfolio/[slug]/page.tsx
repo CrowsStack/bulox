@@ -1,199 +1,179 @@
-"use server";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Check } from "lucide-react";
+import { portfolioData } from "../../data/PortfolioData";
 
-import React from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { Quote } from 'lucide-react';
-
-// Simulating portfolio data - in a real app, this would come from a database
-const portfolioProjects = [
-  {
-    slug: "exterior-house-masterpiece",
-    title: "Exterior House Finishing Masterpiece",
-    subtitle: "Architectural harmony with nature-inspired design",
-    fullDescription: `Our team meticulously transformed this residential exterior, creating a harmonious blend of architectural design and natural surroundings. The project involved:
-
-- Comprehensive exterior painting with custom color palette
-- Landscape integration and architectural woodwork
-- Advanced weather-resistant finishing techniques
-- Precision detailing to enhance architectural features
-
-The result is a stunning home that not only stands out in its neighborhood but also respects and complements its natural environment.`,
-    images: [
-      "/services/exterior/ExteriorFinishing.jpg",
-      "/services/exterior/ExteriorFinishing2.jpg",
-      "/services/exterior/ExteriorFinishing3.jpg"
-    ],
-    category: "Exterior Finishing",
-    location: "San Jose, California",
-    projectDate: "August 2023",
-    challenges: [
-      "Uneven exterior surface",
-      "Complex architectural elements",
-      "Integrating landscape design"
-    ],
-    solutions: [
-      "Custom surface preparation",
-      "Precision painting techniques",
-      "Seamless landscape integration"
-    ],
-    clientTestimonial: {
-      quote: "Bulox completely transformed our home. The design is not just beautiful, but it truly understands how we live and work.",
-      author: "Emily Chen",
-      role: "Tech Entrepreneur"
-    }
-  },
-  // Add more projects here following the same structure
-];
-
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
-
-async function getProjectBySlug(slug: string) {
-  // Simulate database fetch
-  return portfolioProjects.find(p => p.slug === slug);
-}
-
-export default async function PortfolioProjectPage({ params }: PageProps) {
-  const project = await getProjectBySlug(params.slug);
+export default function PortfolioProjectPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const project = portfolioData[params.slug];
 
   if (!project) {
-    return (
-      <div className="min-h-screen bg-black/90 flex items-center justify-center text-white">
-        <h1 className="text-4xl">Project Not Found</h1>
-      </div>
-    );
+    notFound();
   }
 
   return (
-    <div className="min-h-screen bg-black/90 text-white py-16 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Project Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-            {project.title}
-          </h1>
-          <p className="text-xl text-gray-300 italic">{project.subtitle}</p>
+    <div className="min-h-screen bg-transparent pt-24">
+      <div className="container mx-auto px-4 py-16">
+        {/* Back Button */}
+        <Link
+          href="/portfolio"
+          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-8"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Portfolio
+        </Link>
+
+        {/* Hero Section */}
+        <div className="relative h-[60vh] rounded-xl overflow-hidden mb-16">
+          <Image
+            src={project.images[0]}
+            alt={project.title}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="text-center text-white">
+              <p className="text-sm uppercase tracking-wider mb-2">
+                {project.category}
+              </p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                {project.title}
+              </h1>
+              <p className="text-xl md:text-2xl">{project.subtitle}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Project Details Grid */}
-        <div className="grid md:grid-cols-2 gap-12">
-          {/* Project Description */}
-          <div className="space-y-6">
-            <div className="bg-white/10 p-4 rounded-xl">
-              <h3 className="text-2xl font-semibold text-emerald-400 mb-4">Project Overview</h3>
-              <p className="text-gray-300 leading-relaxed whitespace-pre-line">
+        {/* Main Content */}
+        <div className="grid md:grid-cols-3 gap-12 bg-transparent">
+          {/* Left Column - Main Content */}
+          <div className="md:col-span-2 space-y-12 bg-white/80 backdrop-blur-md rounded-xl p-8">
+            {/* Project Description */}
+            <section>
+              <h2 className="text-2xl font-bold mb-4">Project Overview</h2>
+              <p className="text-gray-600 leading-relaxed">
                 {project.fullDescription}
               </p>
-            </div>
+            </section>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-white/10 p-4 rounded-xl">
-                <h4 className="text-lg font-semibold text-emerald-400 mb-2">Project Details</h4>
-                <p><strong>Category:</strong> {project.category}</p>
-                <p><strong>Location:</strong> {project.location}</p>
-                <p><strong>Date:</strong> {project.projectDate}</p>
+            {/* Features */}
+            <section>
+              <h2 className="text-2xl font-bold mb-4">Key Features</h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {project.features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start space-x-2 bg-gray-50/70 p-4 rounded-lg"
+                  >
+                    <Check className="w-5 h-5 text-emerald-500 mt-1 flex-shrink-0" />
+                    <span className="text-gray-700">{feature}</span>
+                  </div>
+                ))}
               </div>
+            </section>
 
-              <div className="bg-white/10 p-4 rounded-xl">
-                <h4 className="text-lg font-semibold text-emerald-400 mb-2">Challenges</h4>
-                <ul className="list-disc list-inside text-gray-300">
+            {/* Challenges & Solutions */}
+            <section className="grid sm:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Challenges</h2>
+                <ul className="space-y-3">
                   {project.challenges.map((challenge, index) => (
-                    <li key={index}>{challenge}</li>
+                    <li key={index} className="text-gray-600">
+                      • {challenge}
+                    </li>
                   ))}
                 </ul>
               </div>
-            </div>
-
-            {/* Client Testimonial - Visible only on mobile */}
-            {project.clientTestimonial && (
-              <div className="md:hidden bg-white/10 p-6 rounded-xl relative">
-                <Quote className="absolute top-4 left-4 text-emerald-400 opacity-50 w-12 h-12" />
-                <blockquote className="italic text-lg text-gray-200 mb-4 pl-16 pr-4">
-                  "{project.clientTestimonial.quote}"
-                </blockquote>
-                <div className="text-right">
-                  <p className="font-semibold text-emerald-400">
-                    {project.clientTestimonial.author}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {project.clientTestimonial.role}
-                  </p>
-                </div>
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Solutions</h2>
+                <ul className="space-y-3">
+                  {project.solutions.map((solution, index) => (
+                    <li key={index} className="text-gray-600">
+                      • {solution}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            )}
-          </div>
+            </section>
 
-          {/* Project Image Gallery */}
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              {project.images.map((image, index) => (
-                <div 
-                  key={index} 
-                  className="relative aspect-square rounded-xl overflow-hidden shadow-xl"
-                >
-                  <Image
-                    src={image}
-                    alt={`${project.title} - Image ${index + 1}`}
-                    fill
-                    className="object-cover hover:scale-110 transition-transform duration-500"
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-white/10 p-4 rounded-xl">
-              <h4 className="text-lg font-semibold text-emerald-400 mb-2">Solutions Implemented</h4>
-              <ul className="list-disc list-inside text-gray-300">
-                {project.solutions.map((solution, index) => (
-                  <li key={index}>{solution}</li>
+            {/* Project Gallery */}
+            <section>
+              <h2 className="text-2xl font-bold mb-6">Project Gallery</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {project.gallery.map((image, index) => (
+                  <div
+                    key={index}
+                    className="relative aspect-[4/3] rounded-lg overflow-hidden"
+                  >
+                    <Image
+                      src={image}
+                      alt={`${project.title} - Image ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
                 ))}
-              </ul>
-            </div>
+              </div>
+            </section>
+          </div>
 
-            {/* Client Testimonial - Visible only on desktop */}
-            {project.clientTestimonial && (
-              <div className="hidden md:block bg-white/10 p-6 rounded-xl relative">
-                <Quote className="absolute top-4 left-4 text-emerald-400 opacity-50 w-12 h-12" />
-                <blockquote className="italic text-lg text-gray-200 mb-4 pl-16 pr-4">
-                  "{project.clientTestimonial.quote}"
-                </blockquote>
-                <div className="text-right">
-                  <p className="font-semibold text-emerald-400">
-                    {project.clientTestimonial.author}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {project.clientTestimonial.role}
-                  </p>
+          {/* Right Column - Sidebar */}
+          <div className="space-y-8">
+            {/* Project Specifications */}
+            <section className="bg-white/80 backdrop-blur-md p-6 rounded-xl">
+              <h2 className="text-xl font-bold mb-4">Project Details</h2>
+              <div className="space-y-4">
+                {Object.entries(project.specifications).map(([key, value]) => (
+                  <div key={key}>
+                    <p className="text-sm text-gray-500">{key}</p>
+                    <p className="font-medium">{value}</p>
+                  </div>
+                ))}
+                <div>
+                  <p className="text-sm text-gray-500">Timeline</p>
+                  <p className="font-medium">{project.timeline}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Location</p>
+                  <p className="font-medium">{project.location}</p>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
+            </section>
 
-        {/* Mobile Testimonial - Fallback for very small screens */}
-        {project.clientTestimonial && (
-          <div className="mt-12 md:hidden">
-            <div className="bg-white/10 p-6 rounded-xl relative">
-              <Quote className="absolute top-4 left-4 text-emerald-400 opacity-50 w-12 h-12" />
-              <blockquote className="italic text-lg text-gray-200 mb-4 pl-16 pr-4">
-                "{project.clientTestimonial.quote}"
-              </blockquote>
-              <div className="text-right">
-                <p className="font-semibold text-emerald-400">
-                  {project.clientTestimonial.author}
-                </p>
-                <p className="text-sm text-gray-400">
+            {/* Client Testimonial */}
+            {project.clientTestimonial && (
+              <section className="bg-emerald-50/70 backdrop-blur-md p-6 rounded-xl">
+                <h2 className="text-xl font-bold mb-4">Client Testimonial</h2>
+                <blockquote className="text-gray-600 italic mb-4">
+                  "{project.clientTestimonial.text}"
+                </blockquote>
+                <p className="font-medium">{project.clientTestimonial.author}</p>
+                <p className="text-sm text-gray-500">
                   {project.clientTestimonial.role}
                 </p>
+              </section>
+            )}
+
+            {/* Related Services */}
+            <section>
+              <h2 className="text-xl font-bold mb-4">Related Services</h2>
+              <div className="space-y-2">
+                {project.relatedServices.map((service, index) => (
+                  <div
+                    key={index}
+                    className="bg-white/70 backdrop-blur-md px-4 py-2 rounded-lg text-gray-700"
+                  >
+                    {service}
+                  </div>
+                ))}
               </div>
-            </div>
+            </section>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
