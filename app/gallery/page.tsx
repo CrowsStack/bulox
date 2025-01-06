@@ -1,244 +1,124 @@
-"use client";
+import Image from "next/image";
+import fs from "fs";
+import path from "path";
 
-import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-
-// Define image type
-type GalleryImage = {
-  id: string;
-  src: string;
-  alt: string;
-  category: string;
-  aspectRatio: number;
-};
-
-// Sample gallery images
-const images: GalleryImage[] = [
-  {
-    id: '1',
-    src: "/gallery/nature1.jpg",
-    alt: "Serene Forest Path",
-    category: "Nature",
-    aspectRatio: 4/3
-  },
-  {
-    id: '2',
-    src: "/gallery/architecture1.jpg",
-    alt: "Modern Building Design",
-    category: "Architecture",
-    aspectRatio: 3/4
-  },
-  {
-    id: '3',
-    src: "/gallery/portrait1.jpg",
-    alt: "Professional Portrait",
-    category: "Portrait",
-    aspectRatio: 3/4
-  },
-  {
-    id: '4',
-    src: "/gallery/nature2.jpg",
-    alt: "Mountain Lake",
-    category: "Nature",
-    aspectRatio: 16/9
-  },
-  {
-    id: '5',
-    src: "/gallery/architecture2.jpg",
-    alt: "Historic Cathedral",
-    category: "Architecture",
-    aspectRatio: 3/4
-  },
-  {
-    id: '6',
-    src: "/gallery/portrait2.jpg",
-    alt: "Artistic Portrait",
-    category: "Portrait",
-    aspectRatio: 3/4
-  },
-  {
-    id: '7',
-    src: "/gallery/nature3.jpg",
-    alt: "Autumn Colors",
-    category: "Nature",
-    aspectRatio: 4/3
-  },
-  {
-    id: '8',
-    src: "/gallery/architecture3.jpg",
-    alt: "Urban Skyline",
-    category: "Architecture",
-    aspectRatio: 16/9
-  },
-  {
-    id: '9',
-    src: "/gallery/portrait3.jpg",
-    alt: "Candid Portrait",
-    category: "Portrait",
-    aspectRatio: 3/4
-  }
-];
-
-const categories = ['All', 'Nature', 'Architecture', 'Portrait'];
-
-// Function to generate random animation parameters
-const generateRandomAnimation = () => {
-  // Generate random corner positions
-  const corners = [
-    { x: -25, y: -25 }, // top-left
-    { x: 25, y: -25 },  // top-right
-    { x: -25, y: 25 },  // bottom-left
-    { x: 25, y: 25 },   // bottom-right
-    { x: 0, y: -25 },   // top-center
-    { x: 0, y: 25 },    // bottom-center
-    { x: -25, y: 0 },   // left-center
-    { x: 25, y: 0 },    // right-center
-  ] as const;
-
-  // Shuffle corners array
-  const shuffledCorners = [...corners]
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 5); // Take 5 random positions
-
-  // Extract x and y coordinates for the animation
-  const xPositions = shuffledCorners.map(corner => corner.x);
-  const yPositions = shuffledCorners.map(corner => corner.y);
+// Function to get all image files from a directory
+function getImagesFromDirectory(directoryPath: string): string[] {
+  const fullPath = path.join(process.cwd(), 'public', directoryPath);
   
-  return {
-    initial: { 
-      scale: 1.2,
-      rotate: Math.random() * 1 - 0.5,
-    },
-    animate: {
-      scale: 1.2,
-      x: xPositions,
-      y: yPositions,
-      rotate: shuffledCorners.map(() => Math.random() * 1 - 0.5),
-      transition: {
-        duration: Math.random() * 10 + 30, // 30-40 seconds
-        ease: "linear",
-        repeat: Infinity,
-        repeatType: "reverse" as const,
-        delay: Math.random() * 5,
-      }
-    }
-  };
-};
-
-// Background animation - slower and more subtle
-const backgroundAnimation = {
-  initial: { 
-    scale: 1.2,
-  },
-  animate: {
-    scale: 1.2,
-    x: [-15, 15, 0, -15],
-    y: [-15, 15, -15, 15],
-    transition: {
-      duration: 30,
-      ease: "linear",
-      repeat: Infinity,
-      repeatType: "reverse" as const,
-    }
-  }
-};
-
-export default function GalleryPage() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [imageColumns, setColumns] = useState<GalleryImage[][]>([]);
-  const [isMobile, setIsMobile] = useState(false);
-  const galleryRef = useRef<HTMLDivElement>(null);
-
-  // Calculate columns based on screen width
-  const calculateColumns = () => {
-    if (typeof window === 'undefined') return [[], []];
-
-    const screenWidth = window.innerWidth;
-    let columnCount = screenWidth < 1024 ? 2 : 3;
-    setIsMobile(screenWidth < 768);
+  try {
+    const files = fs.readdirSync(fullPath);
     
-    const filteredImages = selectedCategory === 'All' 
-      ? images 
-      : images.filter(img => img.category === selectedCategory);
+    // Filter for image files and map to their paths
+    // Exclude the specific PNG file
+    return files
+      .filter(file => 
+        ['.jpg', '.jpeg', '.png', '.webp', '.gif'].some(ext => 
+          file.toLowerCase().endsWith(ext)
+        ) && 
+        file !== 'white-circle-fade-png-corner-fade-to-black-11562858796v6pby1qw3f.png'
+      )
+      .map(file => `/${directoryPath}/${file}`);
+  } catch (error) {
+    console.error(`Error reading directory ${directoryPath}:`, error);
+    return [];
+  }
+}
 
-    // Distribute images into columns
-    const columns: GalleryImage[][] = Array.from({ length: columnCount }, () => []);
-    filteredImages.forEach((img, index) => {
-      columns[index % columnCount].push(img);
+// Function to get images from subdirectories
+function getImagesFromSubdirectories(baseDirectory: string): string[] {
+  const fullPath = path.join(process.cwd(), 'public', baseDirectory);
+  let allImages: string[] = [];
+
+  try {
+    const subdirectories = fs.readdirSync(fullPath);
+    
+    subdirectories.forEach(subdir => {
+      const subdirPath = path.join(fullPath, subdir);
+      
+      // Check if it's a directory
+      if (fs.statSync(subdirPath).isDirectory()) {
+        const subdirImages = fs.readdirSync(subdirPath)
+          .filter(file => 
+            ['.jpg', '.jpeg', '.png', '.webp', '.gif'].some(ext => 
+              file.toLowerCase().endsWith(ext)
+            ) && 
+            file !== 'white-circle-fade-png-corner-fade-to-black-11562858796v6pby1qw3f.png'
+          )
+          .map(file => `/${baseDirectory}/${subdir}/${file}`);
+        
+        allImages = [...allImages, ...subdirImages];
+      }
     });
 
-    return columns;
-  };
+    return allImages;
+  } catch (error) {
+    console.error(`Error reading base directory ${baseDirectory}:`, error);
+    return [];
+  }
+}
 
-  // Recalculate columns on category change or window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setColumns(calculateColumns());
+// Function to generate random aspect ratios and heights
+function generateImageVariants(images: string[]) {
+  return images.map(image => {
+    // Randomly generate aspect ratios and heights
+    const aspectRatioVariants = [
+      { aspectRatio: 1, heightClass: 'h-64' },   // Square
+      { aspectRatio: 2/3, heightClass: 'h-80' }, // Portrait
+      { aspectRatio: 3/2, heightClass: 'h-48' }, // Landscape
+      { aspectRatio: 4/3, heightClass: 'h-72' }  // Standard
+    ];
+
+    const variant = aspectRatioVariants[Math.floor(Math.random() * aspectRatioVariants.length)];
+
+    return {
+      src: image,
+      aspectRatio: variant.aspectRatio,
+      heightClass: variant.heightClass
     };
+  });
+}
 
-    // Initial column calculation
-    setColumns(calculateColumns());
+export default function GalleryPage() {
+  // Combine images from gallery and services directories
+  const galleryImages = getImagesFromDirectory('gallery');
+  const serviceImages = getImagesFromSubdirectories('services');
+  const allImages = [...galleryImages, ...serviceImages];
 
-    // Add resize event listener
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup event listener
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [selectedCategory]);
-
-  // Category filter handler
-  const handleCategoryFilter = (category: string) => {
-    setSelectedCategory(category);
-  };
+  // Generate image variants with random sizing
+  const imageVariants = generateImageVariants(allImages);
 
   return (
-    <div className="min-h-screen relative pt-24">
-      {/* Category Filter */}
-      <div className="z-20 bg-black/50 backdrop-blur-sm py-4">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-center space-x-4">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategoryFilter(category)}
-                className={`px-4 py-2 rounded-full transition-all duration-300 ${
-                  selectedCategory === category
-                    ? 'bg-white text-black'
-                    : 'text-white hover:bg-white/10'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+    <div className="min-h-screen bg-transparent pt-24">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-16 bg-white/70 backdrop-blur-md rounded-xl p-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+            Our Gallery
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            A visual journey through our most memorable design projects and creative solutions
+          </p>
         </div>
-      </div>
 
-      {/* Gallery Grid */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {imageColumns.map((column, columnIndex) => (
-            <div key={columnIndex} className="space-y-8">
-              {column.map((image) => (
-                <motion.div
-                  key={image.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="relative rounded-lg overflow-hidden shadow-xl"
-                  style={{ aspectRatio: image.aspectRatio }}
-                >
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                </motion.div>
-              ))}
+        {/* Pinterest-like Masonry Grid */}
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+          {imageVariants.map((image, index) => (
+            <div 
+              key={index} 
+              className={`relative overflow-hidden rounded-lg group 
+                           w-full mb-4`}
+              style={{ 
+                aspectRatio: image.aspectRatio,
+                height: 'auto'
+              }}
+            >
+              <Image
+                src={image.src}
+                alt={`Gallery image ${index + 1}`}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              />
             </div>
           ))}
         </div>

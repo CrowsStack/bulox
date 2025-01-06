@@ -141,13 +141,13 @@ export default function PortfolioPage() {
     <div className="min-h-screen bg-transparent pt-24">
       <div className="container mx-auto px-4 py-16">
         {/* Header Section */}
-        <div className="text-center mb-16 bg-white/70 backdrop-blur-md rounded-xl p-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Our Portfolio</h1>
-          <p className="text-xl text-gray-600">Explore our latest projects and creative solutions</p>
+        <div className="text-center mb-16 bg-transparent bg-white/10 backdrop-blur-md  rounded-xl p-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Portfolio</h1>
+          <p className="text-xl text-white max-w-2xl mx-auto">Explore our latest projects and creative solutions</p>
         </div>
 
         {/* Carousel Section */}
-        <div className="relative h-[80vh] overflow-hidden bg-gray-100/70 backdrop-blur-md rounded-xl">
+        <div className="relative h-[80vh] overflow-hidden bg-transparent bg-white/10 backdrop-blur-md  rounded-xl">
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={currentIndex}
@@ -228,7 +228,7 @@ export default function PortfolioPage() {
               href={`/portfolio/${item.id}`}
               className="group"
             >
-              <div className="bg-white/70 backdrop-blur-md rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
+              <div className="bg-transparent bg-white/10 backdrop-blur-md  rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2">
                 <div className="relative h-64 w-full">
                   <Image
                     src={item.images[0]}
@@ -239,14 +239,14 @@ export default function PortfolioPage() {
                 </div>
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-xl font-bold text-gray-800">
+                    <h2 className="text-xl font-bold text-white">
                       {item.title}
                     </h2>
-                    <span className="text-sm text-gray-500 bg-gray-100/70 px-2 py-1 rounded-full">
+                    <span className="text-sm text-white bg-gray-100/70 px-2 py-1 rounded-full">
                       {item.category}
                     </span>
                   </div>
-                  <p className="text-gray-600 line-clamp-3">
+                  <p className="text-white line-clamp-3">
                     {item.description}
                   </p>
                 </div>

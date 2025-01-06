@@ -21,7 +21,7 @@ export default function PortfolioProjectPage({
         {/* Back Button */}
         <Link
           href="/portfolio"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-8"
+          className="inline-flex items-center text-white hover:text-gray-900 mb-8"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Portfolio
@@ -49,20 +49,20 @@ export default function PortfolioProjectPage({
         </div>
 
         {/* Main Content */}
-        <div className="grid md:grid-cols-3 gap-12 bg-transparent">
+        <div className="grid md:grid-cols-3 gap-12 ">
           {/* Left Column - Main Content */}
-          <div className="md:col-span-2 space-y-12 bg-white/80 backdrop-blur-md rounded-xl p-8">
+          <div className="md:col-span-2 space-y-12 bg-transparent bg-white/10 backdrop-blur-md  rounded-xl p-8">
             {/* Project Description */}
             <section>
-              <h2 className="text-2xl font-bold mb-4">Project Overview</h2>
-              <p className="text-gray-600 leading-relaxed">
+              <h2 className="text-2xl font-bold mb-4 text-white">Project Overview</h2>
+              <p className="text-white leading-relaxed">
                 {project.fullDescription}
               </p>
             </section>
 
             {/* Features */}
             <section>
-              <h2 className="text-2xl font-bold mb-4">Key Features</h2>
+              <h2 className="text-2xl text-white font-bold mb-4">Key Features</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 {project.features.map((feature, index) => (
                   <div
@@ -70,7 +70,7 @@ export default function PortfolioProjectPage({
                     className="flex items-start space-x-2 bg-gray-50/70 p-4 rounded-lg"
                   >
                     <Check className="w-5 h-5 text-emerald-500 mt-1 flex-shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-white">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -79,20 +79,20 @@ export default function PortfolioProjectPage({
             {/* Challenges & Solutions */}
             <section className="grid sm:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-2xl font-bold mb-4">Challenges</h2>
+                <h2 className="text-2xl  text-white font-bold mb-4">Challenges</h2>
                 <ul className="space-y-3">
                   {project.challenges.map((challenge, index) => (
-                    <li key={index} className="text-gray-600">
+                    <li key={index} className="text-white">
                       • {challenge}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h2 className="text-2xl font-bold mb-4">Solutions</h2>
+                <h2 className="text-2xl font-bold mb-4 text-white">Solutions</h2>
                 <ul className="space-y-3">
                   {project.solutions.map((solution, index) => (
-                    <li key={index} className="text-gray-600">
+                    <li key={index} className="text-white">
                       • {solution}
                     </li>
                   ))}
@@ -102,7 +102,7 @@ export default function PortfolioProjectPage({
 
             {/* Project Gallery */}
             <section>
-              <h2 className="text-2xl font-bold mb-6">Project Gallery</h2>
+              <h2 className="text-2xl text-white font-bold mb-6">Project Gallery</h2>
               <div className="grid grid-cols-2 gap-4">
                 {project.gallery.map((image, index) => (
                   <div
