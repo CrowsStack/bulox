@@ -81,18 +81,7 @@ function generateImageVariants(images: string[]) {
 
 export default function GalleryPage() {
   // Combine images from gallery and services directories
-  const galleryImages = [
-    '/gallery/image1.jpg',
-    '/gallery/image2.jpg',
-    '/gallery/image3.jpg',
-    '/gallery/image4.jpg',
-    '/gallery/image5.jpg',
-    '/gallery/image6.jpg',
-    '/gallery/image7.jpg',
-    '/gallery/image8.jpg',
-    '/gallery/image9.jpg',
-    '/gallery/image10.jpg'
-  ];
+  const galleryImages = getImagesFromDirectory('gallery');
   const serviceImages = getImagesFromSubdirectories('services');
   const allImages = [...galleryImages, ...serviceImages];
 
