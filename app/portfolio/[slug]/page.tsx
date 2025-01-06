@@ -5,14 +5,31 @@ import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { portfolioData } from "../../data/PortfolioData";
 
-// Define interface for the expected params structure
-interface Params {
+// Define the params type
+export type Params = {
   slug: string;
 }
 
 // Define the props for the page component
-interface PortfolioProjectPageProps {
-  params: Promise<Params>;
+export type PortfolioProjectPageProps = {
+  params: Params;
+}
+
+// Metadata generation function
+export async function generateMetadata({ params }: PortfolioProjectPageProps) {
+  const project = portfolioData[params.slug];
+
+  if (!project) {
+    return {
+      title: 'Project Not Found',
+      description: 'The requested project could not be found'
+    };
+  }
+
+  return {
+    title: project.title,
+    description: project.description
+  };
 }
 
 // The main component for displaying the portfolio project page
