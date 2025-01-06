@@ -537,7 +537,7 @@ export const portfolioData: { [key: string]: PortfolioProject } = {
       "Custom Finishing"
     ]
   },
-  '': {
+  'custom-furniture-creation': {
     id: 'custom-furniture-creation',
     title: "Bespoke Furniture Design",
     subtitle: "Crafting Unique Living Spaces",
@@ -590,7 +590,7 @@ export const portfolioData: { [key: string]: PortfolioProject } = {
       "Custom Fabrication"
     ]
   },
-  '': {
+  'kitchen-renovation-modern': {
     id: 'kitchen-renovation-modern',
     title: "Modern Kitchen Transformation",
     subtitle: "Sleek and Functional Design",
@@ -643,7 +643,7 @@ export const portfolioData: { [key: string]: PortfolioProject } = {
       "Cabinetry Design"
     ]
   },
-  '': {
+  'bathroom-remodeling-luxury': {
     id: 'bathroom-remodeling-luxury',
     title: "Luxury Bathroom Remodeling",
     subtitle: "Spa-Like Tranquility",
@@ -696,7 +696,7 @@ export const portfolioData: { [key: string]: PortfolioProject } = {
       "Smart Home Integration"
     ]
   },
-  '': {
+  'office-interiors-corporate': {
     id: 'office-interiors-corporate',
     title: "Corporate Office Interior Design",
     subtitle: "Innovative Workspace Solutions",
@@ -749,7 +749,7 @@ export const portfolioData: { [key: string]: PortfolioProject } = {
       "Furniture Selection"
     ]
   },
-  '': {
+  'landscape-design-outdoor': {
     id: 'landscape-design-outdoor',
     title: "Landscape Design and Outdoor Living",
     subtitle: "Creating Natural Sanctuaries",
@@ -802,7 +802,7 @@ export const portfolioData: { [key: string]: PortfolioProject } = {
       "Outdoor Living Spaces"
     ]
   },
-  '': {
+  'home-staging-real-estate': {
     id: 'home-staging-real-estate',
     title: "Professional Home Staging",
     subtitle: "Maximizing Property Potential",
@@ -855,7 +855,7 @@ export const portfolioData: { [key: string]: PortfolioProject } = {
       "Real Estate Consulting"
     ]
   },
-  '': {
+  'sustainable-design-eco': {
     id: 'sustainable-design-eco',
     title: "Sustainable Design Solutions",
     subtitle: "Eco-Friendly Living Spaces",
