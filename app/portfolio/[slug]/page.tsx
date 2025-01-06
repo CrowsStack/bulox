@@ -1,16 +1,39 @@
+// Import necessary modules and components
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { portfolioData } from "../../data/PortfolioData";
+import { Metadata } from "next";
 
-export default function PortfolioProjectPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const project = portfolioData[params.slug];
+// Define the parameter types
+type PageParams = { slug: string };
 
+// Metadata generation function
+export async function generateMetadata({ params }: { params: Promise<PageParams> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const project = portfolioData[resolvedParams.slug];
+
+  if (!project) {
+    return {
+      title: 'Project Not Found',
+      description: 'The requested project could not be found'
+    };
+  }
+
+  return {
+    title: project.title,
+    description: project.description
+  };
+}
+
+// The main component for displaying the portfolio project page
+export default async function PortfolioProjectPage({ params }: { params: Promise<PageParams> }) {
+  // Retrieve the project data based on the slug
+  const resolvedParams = await params;
+  const project = portfolioData[resolvedParams.slug];
+
+  // If no project is found, call notFound()
   if (!project) {
     notFound();
   }
@@ -19,10 +42,7 @@ export default function PortfolioProjectPage({
     <div className="min-h-screen bg-transparent pt-24">
       <div className="container mx-auto px-4 py-16">
         {/* Back Button */}
-        <Link
-          href="/portfolio"
-          className="inline-flex items-center text-white hover:text-gray-900 mb-8"
-        >
+        <Link href="/portfolio" className="inline-flex items-center text-white hover:text-gray-900 mb-8">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Portfolio
         </Link>
@@ -38,27 +58,21 @@ export default function PortfolioProjectPage({
           />
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-center text-white">
-              <p className="text-sm uppercase tracking-wider mb-2">
-                {project.category}
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                {project.title}
-              </h1>
+              <p className="text-sm uppercase tracking-wider mb-2">{project.category}</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">{project.title}</h1>
               <p className="text-xl md:text-2xl">{project.subtitle}</p>
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="grid md:grid-cols-3 gap-12 ">
+        <div className="grid md:grid-cols-3 gap-12">
           {/* Left Column - Main Content */}
-          <div className="md:col-span-2 space-y-12 bg-transparent bg-white/10 backdrop-blur-md  rounded-xl p-8">
+          <div className="md:col-span-2 space-y-12 bg-transparent bg-white/10 backdrop-blur-md rounded-xl p-8">
             {/* Project Description */}
             <section>
               <h2 className="text-2xl font-bold mb-4 text-white">Project Overview</h2>
-              <p className="text-white leading-relaxed">
-                {project.fullDescription}
-              </p>
+              <p className="text-white leading-relaxed">{project.fullDescription}</p>
             </section>
 
             {/* Features */}
@@ -66,10 +80,7 @@ export default function PortfolioProjectPage({
               <h2 className="text-2xl text-white font-bold mb-4">Key Features</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 {project.features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start space-x-2 bg-gray-50/70 p-4 rounded-lg"
-                  >
+                  <div key={index} className="flex items-start space-x-2 bg-gray-50/70 p-4 rounded-lg">
                     <Check className="w-5 h-5 text-emerald-500 mt-1 flex-shrink-0" />
                     <span className="text-white">{feature}</span>
                   </div>
@@ -80,12 +91,10 @@ export default function PortfolioProjectPage({
             {/* Challenges & Solutions */}
             <section className="grid sm:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-2xl  text-white font-bold mb-4">Challenges</h2>
+                <h2 className="text-2xl text-white font-bold mb-4">Challenges</h2>
                 <ul className="space-y-3">
                   {project.challenges.map((challenge, index) => (
-                    <li key={index} className="text-white">
-                      • {challenge}
-                    </li>
+                    <li key={index} className="text-white">• {challenge}</li>
                   ))}
                 </ul>
               </div>
@@ -93,9 +102,7 @@ export default function PortfolioProjectPage({
                 <h2 className="text-2xl font-bold mb-4 text-white">Solutions</h2>
                 <ul className="space-y-3">
                   {project.solutions.map((solution, index) => (
-                    <li key={index} className="text-white">
-                      • {solution}
-                    </li>
+                    <li key={index} className="text-white">• {solution}</li>
                   ))}
                 </ul>
               </div>
@@ -106,10 +113,7 @@ export default function PortfolioProjectPage({
               <h2 className="text-2xl text-white font-bold mb-6">Project Gallery</h2>
               <div className="grid grid-cols-2 gap-4">
                 {project.gallery.map((image, index) => (
-                  <div
-                    key={index}
-                    className="relative aspect-[4/3] rounded-lg overflow-hidden"
-                  >
+                  <div key={index} className="relative aspect-[4/3] rounded-lg overflow-hidden">
                     <Image
                       src={image}
                       alt={`${project.title} - Image ${index + 1}`}
@@ -154,9 +158,7 @@ export default function PortfolioProjectPage({
                   "{project.clientTestimonial.text}"
                 </blockquote>
                 <p className="font-medium">{project.clientTestimonial.author}</p>
-                <p className="text-sm text-gray-500">
-                  {project.clientTestimonial.role}
-                </p>
+                <p className="text-sm text-gray-500">{project.clientTestimonial.role}</p>
               </section>
             )}
 
@@ -165,10 +167,7 @@ export default function PortfolioProjectPage({
               <h2 className="text-xl font-bold mb-4">Related Services</h2>
               <div className="space-y-2">
                 {project.relatedServices.map((service, index) => (
-                  <div
-                    key={index}
-                    className="bg-white/70 backdrop-blur-md px-4 py-2 rounded-lg text-gray-700"
-                  >
+                  <div key={index} className="bg-white/70 backdrop-blur-md px-4 py-2 rounded-lg text-gray-700">
                     {service}
                   </div>
                 ))}

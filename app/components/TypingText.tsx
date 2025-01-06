@@ -88,11 +88,11 @@ export const TypingText: React.FC<TypingTextProps> = ({
 
   const cursorVariants = {
     blink: {
-      opacity: [1, 0],
+      opacity: [0, 1],
       transition: {
         duration: 0.8,
         repeat: Infinity,
-        repeatType: "reverse"
+        repeatType: "reverse" as const
       }
     }
   };

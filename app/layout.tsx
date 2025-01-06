@@ -6,7 +6,6 @@ import NextImage from 'next/image';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { metadata } from './metadata';
-import { LineTransitionWrapper } from '@/components/FramerMotions';
 import './globals.css';
 
 const inter = Inter({ 
@@ -68,14 +67,9 @@ export default function RootLayout({
         <div className="relative z-10 min-h-screen flex flex-col">
           <Navbar />
           
-          <LineTransitionWrapper
-            lineColor="#ffffff"
-            lineThickness={2}
-          >
-            <main className="flex-grow">
-              {children}
-            </main>
-          </LineTransitionWrapper>
+          <main className="flex-grow">
+            {children}
+          </main>
           
           <Footer />
         </div>
