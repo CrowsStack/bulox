@@ -4,20 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { portfolioData } from "../../data/PortfolioData";
+import { Metadata } from "next";
 
-// Define the params type
-export type Params = {
-  slug: string;
-}
-
-// Define the props for the page component
-export type PortfolioProjectPageProps = {
-  params: Params;
-}
+// Define the parameter types
+type PageParams = { slug: string };
 
 // Metadata generation function
-export async function generateMetadata({ params }: PortfolioProjectPageProps) {
-  const project = portfolioData[params.slug];
+export async function generateMetadata({ params }: { params: Promise<PageParams> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const project = portfolioData[resolvedParams.slug];
 
   if (!project) {
     return {
@@ -33,10 +28,10 @@ export async function generateMetadata({ params }: PortfolioProjectPageProps) {
 }
 
 // The main component for displaying the portfolio project page
-export default async function PortfolioProjectPage({ params }: PortfolioProjectPageProps) {
+export default async function PortfolioProjectPage({ params }: { params: Promise<PageParams> }) {
   // Retrieve the project data based on the slug
-  const { slug } = await params;
-  const project = portfolioData[slug];
+  const resolvedParams = await params;
+  const project = portfolioData[resolvedParams.slug];
 
   // If no project is found, call notFound()
   if (!project) {
