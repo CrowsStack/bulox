@@ -166,7 +166,7 @@ export default function ServicesPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="min-h-screen bg-transparent py-16 px-4"
+      className="min-h-screen bg-transparent py-24 px-4"
     >
       <div className="max-w-7xl mx-auto space-y-12">
         <motion.h1 

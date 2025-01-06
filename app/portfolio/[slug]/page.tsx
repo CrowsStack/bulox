@@ -32,8 +32,9 @@ export default function PortfolioProjectPage({
           <Image
             src={project.images[0]}
             alt={project.title}
-            fill
-            className="object-cover"
+            width={1200}
+            height={800}
+            className="object-cover w-full h-full"
           />
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-center text-white">
@@ -112,7 +113,8 @@ export default function PortfolioProjectPage({
                     <Image
                       src={image}
                       alt={`${project.title} - Image ${index + 1}`}
-                      fill
+                      width={600}
+                      height={400}
                       className="object-cover hover:scale-110 transition-transform duration-500"
                     />
                   </div>
